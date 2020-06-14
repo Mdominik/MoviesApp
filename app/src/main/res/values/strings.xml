@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">MoviesApp</string>
+    <string name="sort_label_name">Sort by:</string>
+    <string name="by_rating_name">rating</string>
+    <string name="by_popularity_name">popularity</string>
+</resources>
