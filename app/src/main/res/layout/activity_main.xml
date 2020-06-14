@@ -13,7 +13,7 @@
         android:layout_margin="16dp"
         android:layout_marginBottom="20dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/sv_all_movies"
+        app:layout_constraintBottom_toTopOf="@+id/rv_all_movies"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -63,14 +63,16 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ScrollView
-        android:id="@+id/sv_all_movies"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_all_movies"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@+id/sortingLayout">
 
 
-    </ScrollView>
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
