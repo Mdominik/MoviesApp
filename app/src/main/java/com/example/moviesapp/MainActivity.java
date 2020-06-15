@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     private ImageView mMovieImage;
     private Switch mSwitchSorting;
     List<Movie> mMoviesList;
-
+    private ProgressBar mLoading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         mMoviesRecyclerView = (RecyclerView) findViewById(R.id.rv_all_movies);
 
-
+        mLoading = (ProgressBar) findViewById(R.id.pb_loading);
+        mLoading.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error);
 
         mMoviesList = new ArrayList<>();
 
@@ -117,16 +120,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         startActivity(intentToStartDetailActivity);
     }
     private void loadMoviePosters() {
-        showPosters();
         new FetchMoviesTask().execute(mSwitchSorting.isChecked());
     }
 
     private void showPosters() {
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mMoviesRecyclerView.setVisibility(View.VISIBLE);
+        mLoading.setVisibility(View.INVISIBLE);
     }
 
-    private void showMoviesDataView() {
-        mMoviesRecyclerView.setVisibility(View.VISIBLE);
+    private void showError() {
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        mLoading.setVisibility(View.INVISIBLE);
+    }
+
+    private void showProgress() {
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+        mLoading.setVisibility(View.VISIBLE);
     }
 
     public class FetchMoviesTask extends  AsyncTask<Boolean, Void, ArrayList<Movie>> {
@@ -134,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            showProgress();
+
         }
 
         @Override
@@ -150,25 +164,28 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
             try {
                 String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestURL);
                 Log.v("JSON!!!!", jsonMoviesResponse);
+
                 return MoviesAPIJsonUtils.getAllMoviesFromJSON(MainActivity.this, jsonMoviesResponse);
 
             } catch(Exception e ) {
+
                 e.printStackTrace();
                 return null;
             }
         }
 
+
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
             Log.i("ELEMTNTS IN MOVIESLIST", String.valueOf(movies==null));
             if (movies != null) {
-                showMoviesDataView();
-
                 mMovieAdapter.setMoviesData(movies);
+                showPosters();
                 for(Movie m : mMovieAdapter.getmMoviesList()) {
                     Log.v("NOT NULL", m.getOriginalTitle());
                 }
             } else {
+                showError();
                 for(Movie m :  mMovieAdapter.getmMoviesList()) {
                     Log.v("NULL AS HELL", m.getOriginalTitle());
                 }
