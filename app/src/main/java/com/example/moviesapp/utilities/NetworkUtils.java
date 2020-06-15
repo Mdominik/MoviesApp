@@ -22,8 +22,10 @@ public class NetworkUtils {
     private static String URL_SORT_BY_POPULARITY = "popularity.desc";
     private static String URL_SORT_BY_RATING = "vote_average.desc";
 
+
+    //I'm using this additional parameter for top rated movies in order to filter the minor movies
     private static String URL_VOTECOUNT_GREATER_THAN = "vote_count.gte";
-    private static String URL_VOTECOUNT_GREATER_THAN_VALUE = "1000";
+    private static String URL_VOTECOUNT_GREATER_THAN_VALUE = "10000";
 
     private static String URL_BASE_FOR_POSTER = "https://image.tmdb.org/t/p/";
 
@@ -40,15 +42,16 @@ public class NetworkUtils {
 
 
     public static URL buildUrl(boolean sortByRating) {
-        Uri builtUri = Uri.parse(URL_BASE).buildUpon()
+        Uri.Builder builtUri = Uri.parse(URL_BASE).buildUpon()
                 .appendQueryParameter(URL_API_KEY_QUERY,URL_API_KEY)
                 .appendQueryParameter(URL_SORT_BY_QUERY,
-                        sortByRating ? URL_SORT_BY_RATING : URL_SORT_BY_POPULARITY)
-                .appendQueryParameter(URL_VOTECOUNT_GREATER_THAN, URL_VOTECOUNT_GREATER_THAN_VALUE)
-                .build();
+                        sortByRating ? URL_SORT_BY_RATING : URL_SORT_BY_POPULARITY);
+        if(sortByRating) {
+            builtUri.appendQueryParameter(URL_VOTECOUNT_GREATER_THAN, URL_VOTECOUNT_GREATER_THAN_VALUE);
+        }
         URL url = null;
         try {
-            url = new URL(builtUri.toString());
+            url = new URL(builtUri.build().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

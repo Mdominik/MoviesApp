@@ -1,6 +1,9 @@
 package com.example.moviesapp;
 
 public class Movie {
+    public Movie() {
+    }
+
     public Movie(String originalTitle, String posterPath, String overview, String releaseDate, Double voteAverage) {
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;

@@ -20,25 +20,28 @@
 
         <TextView
             android:id="@+id/tv_original_title"
-            android:layout_width="189dp"
-            android:layout_height="31dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:text="TextView"
-            android:textSize="24dp"
-            android:textAlignment="center"
+            android:fontFamily="@font/roboto_light"
             android:gravity="center_horizontal"
+            android:inputType="textMultiLine"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textSize="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_poster_detail" />
 
         <TextView
             android:id="@+id/tv_year"
-            android:layout_width="73dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:fontFamily="@font/roboto_light"
+            android:gravity="center_horizontal"
             android:text="TextView"
             android:textAlignment="center"
-            android:gravity="center_horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_original_title" />
@@ -48,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
+            android:fontFamily="@font/roboto_light"
             android:gravity="center_horizontal"
             android:text="TextView"
             android:textAlignment="center"
@@ -57,12 +61,14 @@
 
         <TextView
             android:id="@+id/tv_overview"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="28dp"
             android:ems="10"
+            android:fontFamily="@font/roboto_light"
             android:gravity="start|top"
             android:inputType="textMultiLine"
+            android:justificationMode="inter_word"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_rating" />

@@ -41,7 +41,6 @@ public class MovieActivity extends AppCompatActivity {
         if (intentThatStartedThisActivity != null) {
             if (intentThatStartedThisActivity.hasExtra("posterPath")) {
                 String poster= intentThatStartedThisActivity.getStringExtra("posterPath");
-                Log.i("IN MOVIE ACTIVITY", poster);
                 Picasso.get().load(poster).into(mPoster);
             }
             if (intentThatStartedThisActivity.hasExtra("title")) {

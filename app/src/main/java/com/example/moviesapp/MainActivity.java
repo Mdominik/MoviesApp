@@ -158,12 +158,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
             }
 
             Boolean sort_by = bool[0]; // true = sort by rating, false = sort by popularity
-            Log.v("SORTING IN doInBackg", sort_by.toString());
             URL movieRequestURL = NetworkUtils.buildUrl(sort_by);
-
+            Log.e("URL", movieRequestURL.toString());
             try {
                 String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestURL);
-                Log.v("JSON!!!!", jsonMoviesResponse);
 
                 return MoviesAPIJsonUtils.getAllMoviesFromJSON(MainActivity.this, jsonMoviesResponse);
 
@@ -177,20 +175,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         @Override
         protected void onPostExecute(ArrayList<Movie> movies) {
-            Log.i("ELEMTNTS IN MOVIESLIST", String.valueOf(movies==null));
             if (movies != null) {
                 mMovieAdapter.setMoviesData(movies);
                 showPosters();
                 for(Movie m : mMovieAdapter.getmMoviesList()) {
-                    Log.v("NOT NULL", m.getOriginalTitle());
                 }
             } else {
                 showError();
                 for(Movie m :  mMovieAdapter.getmMoviesList()) {
-                    Log.v("NULL AS HELL", m.getOriginalTitle());
                 }
             }
-            Log.i("ELEMTNTS IN MOVIESLIST", String.valueOf(mMoviesList.size()));
         }
 
 

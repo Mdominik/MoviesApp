@@ -19,35 +19,61 @@ import java.util.List;
 public class MoviesAPIJsonUtils {
 
 
-    private static String MOVIEAPI_LIST_NAME = "results";
-    private static String MOVIEAPI_TITLE = "original_title";
-    private static String MOVIEAPI_POSTER_PATH = "poster_path";
-    private static String MOVIEAPI_OVERVIEW = "overview";
-    private static String MOVIEAPI_RELEASE_DATE = "release_date";
-    private static String MOVIEAPI_VOTE_AVERAGE = "vote_average";
+    private static final String[] MOVIEAPI_FIELDS= new String[]{
+            "results","original_title","poster_path","overview", "release_date","vote_average"
+    };
 
-    /* String array to hold each day's weather String */
-
-
-
-    private static final String format = "json";
-
-
-    public static ArrayList<Movie> getAllMoviesFromJSON(Context context, String moviesJsonStr) throws JSONException {
+    public static ArrayList<Movie> getAllMoviesFromJSON(Context context, String moviesJsonStr){
         ArrayList<Movie> parsedMoviesData = null;
+        JSONObject moviesJson;
+        JSONArray moviesArray = null;
+        try {
+            moviesJson = new JSONObject(moviesJsonStr);
 
-        JSONObject moviesJson = new JSONObject(moviesJsonStr);
-
-        JSONArray moviesArray = moviesJson.getJSONArray(MOVIEAPI_LIST_NAME);
-        parsedMoviesData = new ArrayList<>(moviesArray.length());
+            moviesArray = moviesJson.getJSONArray(MOVIEAPI_FIELDS[0]); // get results array
+            parsedMoviesData = new ArrayList<>(moviesArray.length());
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
 
         for(int i=0; i < moviesArray.length(); i++) {
-            JSONObject singleMovie = moviesArray.getJSONObject(i);
-            Movie movie = new Movie(singleMovie.getString(MOVIEAPI_TITLE),
-                                    singleMovie.getString(MOVIEAPI_POSTER_PATH),
-                                    singleMovie.getString(MOVIEAPI_OVERVIEW),
-                                    singleMovie.getString(MOVIEAPI_RELEASE_DATE),
-                                    singleMovie.getDouble(MOVIEAPI_VOTE_AVERAGE));
+            JSONObject singleMovie=null;
+
+            //first exception handling
+            try {
+                singleMovie = moviesArray.getJSONObject(i);
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
+
+            // I know it should be in a HashMap
+            String[] fieldsValues = new String[5]; //title,posterPath,overview,date,vote_average
+            for(int j=0; j<fieldsValues.length;j++) {
+
+                //JSON fields error handling.
+                //if any of the fields is not present, a field will be filled in with default data
+                try{
+
+                    fieldsValues[j] = singleMovie.getString(MOVIEAPI_FIELDS[j+1]);
+                    if(j==3) fieldsValues[j] = fieldsValues[j].substring(0,4);  //first 4 digits for a year
+
+                } catch(JSONException e) {
+
+                    //if double (4th in the array) absent
+                    if(j==4) {
+                        fieldsValues[j] = "0.0";
+                    }
+
+                    else fieldsValues[j] = "unknown";
+                }
+            }
+
+            //create movie object with parameters taken from JSON after error handling
+            Movie movie = new Movie(fieldsValues[0],
+                                    fieldsValues[1],
+                                    fieldsValues[2],
+                                    fieldsValues[3],
+                                    Double.parseDouble(fieldsValues[4]));
 
             parsedMoviesData.add(movie);
         }
