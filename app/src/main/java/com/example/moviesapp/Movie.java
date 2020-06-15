@@ -4,12 +4,13 @@ public class Movie {
     public Movie() {
     }
 
-    public Movie(String originalTitle, String posterPath, String overview, String releaseDate, Double voteAverage) {
+    public Movie(String originalTitle, String posterPath, String overview, String releaseDate, Double voteAverage, String backgroundPath) {
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;
         this.overview = overview;
         this.releaseDate = releaseDate;
         this.voteAverage = voteAverage;
+        this.backgroundPath = backgroundPath;
     }
 
     private String originalTitle;
@@ -17,6 +18,16 @@ public class Movie {
     private String overview;
     private String releaseDate;
     private Double voteAverage;
+
+    public String getBackgroundPath() {
+        return backgroundPath;
+    }
+
+    public void setBackgroundPath(String backgroundPath) {
+        this.backgroundPath = backgroundPath;
+    }
+
+    private String backgroundPath;
 
     public String getOriginalTitle() {
         return originalTitle;

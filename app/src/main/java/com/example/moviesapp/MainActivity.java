@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         intentToStartDetailActivity.putExtra("year",movie.getReleaseDate());
         intentToStartDetailActivity.putExtra("rating",movie.getVoteAverage());
         intentToStartDetailActivity.putExtra("overview",movie.getOverview());
-
+        intentToStartDetailActivity.putExtra("backgroundPath", NetworkUtils.getURLBaseAndSizeForBackground()+movie.getBackgroundPath());
         startActivity(intentToStartDetailActivity);
     }
     private void loadMoviePosters() {

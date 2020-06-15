@@ -14,30 +14,31 @@ public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-
     private static String URL_API_KEY_QUERY = "api_key";
     private static String URL_SORT_BY_QUERY = "sort_by";
-
     private static String URL_API_KEY = "cad019638a028a2ef5d2aa2ddf283278"; //to hide on GITHUB
     private static String URL_SORT_BY_POPULARITY = "popularity.desc";
     private static String URL_SORT_BY_RATING = "vote_average.desc";
 
-
     //I'm using this additional parameter for top rated movies in order to filter the minor movies
     private static String URL_VOTECOUNT_GREATER_THAN = "vote_count.gte";
     private static String URL_VOTECOUNT_GREATER_THAN_VALUE = "10000";
-
     private static String URL_BASE_FOR_POSTER = "https://image.tmdb.org/t/p/";
-
     private static String URL_SIZE_POSTER = "w185";
-
+    private static String URL_SIZE_BACKGROUND = "w342";
     private static String URL_BASE = "https://api.themoviedb.org/3/discover/movie";
 
     public static String getURLBaseAndSizeForPoster() {
         return URL_BASE_FOR_POSTER+URL_SIZE_POSTER;
     }
+    public static String getURLBaseAndSizeForBackground() {
+        return URL_BASE_FOR_POSTER+URL_SIZE_BACKGROUND;
+    }
     public static String buildUrlForPoster(String posterPath) {
         return URL_BASE_FOR_POSTER + URL_SIZE_POSTER + posterPath;
+    }
+    public static String buildUrlForBackground(String backgroundPath) {
+        return URL_BASE_FOR_POSTER + URL_SIZE_BACKGROUND + backgroundPath;
     }
 
 

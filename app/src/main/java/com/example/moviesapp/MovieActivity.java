@@ -23,6 +23,7 @@ public class MovieActivity extends AppCompatActivity {
     private TextView mRatingTextDisplay;
     private TextView mOverviewDisplay;
     private ImageView mPoster;
+    private ImageView mBackdrop;
     boolean rememberSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -34,7 +35,7 @@ public class MovieActivity extends AppCompatActivity {
         mRatingTextDisplay = (TextView) findViewById(R.id.tv_rating);
         mOverviewDisplay = (TextView) findViewById(R.id.tv_overview);
         mPoster = (ImageView) findViewById(R.id.iv_poster_detail);
-
+        mBackdrop = (ImageView) findViewById(R.id.iv_backdrop);
         Intent intentThatStartedThisActivity = getIntent();
 
         // COMPLETED (2) Display the weather forecast that was passed from MainActivity
@@ -59,6 +60,10 @@ public class MovieActivity extends AppCompatActivity {
                 Double rating= intentThatStartedThisActivity.getDoubleExtra("rating", 0.0);
                 mRatingTextDisplay.setText(String.valueOf(rating)+"/10");
                 //mRatingDisplay.setRating(Float.parseFloat(rating));
+            }
+            if (intentThatStartedThisActivity.hasExtra("backgroundPath")) {
+                String path = intentThatStartedThisActivity.getStringExtra("backgroundPath");
+                Picasso.get().load(path).into(mBackdrop);
             }
         }
     }

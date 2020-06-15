@@ -18,9 +18,11 @@ import java.util.List;
 
 public class MoviesAPIJsonUtils {
 
+    private static int NUMBER_FIELDS = 6;
 
+    //fields from JSON that I'm using
     private static final String[] MOVIEAPI_FIELDS= new String[]{
-            "results","original_title","poster_path","overview", "release_date","vote_average"
+            "results","original_title","poster_path","overview", "release_date","vote_average","backdrop_path",
     };
 
     public static ArrayList<Movie> getAllMoviesFromJSON(Context context, String moviesJsonStr){
@@ -47,8 +49,8 @@ public class MoviesAPIJsonUtils {
             }
 
             // I know it should be in a HashMap
-            String[] fieldsValues = new String[5]; //title,posterPath,overview,date,vote_average
-            for(int j=0; j<fieldsValues.length;j++) {
+            String[] fieldsValues = new String[NUMBER_FIELDS]; //title,posterPath,overview,date,vote_average
+            for(int j=0; j<NUMBER_FIELDS;j++) {
 
                 //JSON fields error handling.
                 //if any of the fields is not present, a field will be filled in with default data
@@ -73,7 +75,8 @@ public class MoviesAPIJsonUtils {
                                     fieldsValues[1],
                                     fieldsValues[2],
                                     fieldsValues[3],
-                                    Double.parseDouble(fieldsValues[4]));
+                                    Double.parseDouble(fieldsValues[4]),
+                                    fieldsValues[5]);
 
             parsedMoviesData.add(movie);
         }
