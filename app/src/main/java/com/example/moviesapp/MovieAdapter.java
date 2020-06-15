@@ -22,7 +22,7 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
     List<Movie> mMoviesList;
-    public int numberOfColumns = 3;
+    public int numberOfColumns = 2;
     public List<Movie> getmMoviesList() {
         return mMoviesList;
     }
@@ -31,14 +31,19 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         this.mMoviesList = mMoviesList;
     }
 
-    public MovieAdapter(List<Movie> movies) {
+    public MovieAdapter(List<Movie> movies, MovieAdapterOnClickHandler mClickHandler) {
         this.mMoviesList = movies;
+        this.mClickHandler = mClickHandler;
     }
 
-    public MovieAdapter() {
+    private final MovieAdapterOnClickHandler mClickHandler;
 
+    /**
+     * The interface that receives onClick messages.
+     */
+    public interface MovieAdapterOnClickHandler {
+        void onClick(int index);
     }
-
 
     @NonNull
     @Override
@@ -72,7 +77,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         notifyDataSetChanged();
     }
 
-    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         //ImageView to store the poster picture
         public ImageView mMovieImageView;
@@ -80,7 +85,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         public MovieAdapterViewHolder(View itemView) {
             super(itemView);
             mMovieImageView = (ImageView) itemView.findViewById(R.id.movieItem);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mClickHandler.onClick(adapterPosition);
         }
     }
+
 
 }

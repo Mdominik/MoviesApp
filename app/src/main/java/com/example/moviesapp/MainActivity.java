@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,9 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.moviesapp.MovieAdapter.MovieAdapterOnClickHandler;
 
 
-public class MainActivity extends AppCompatActivity  {
+
+public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler {
 
     private RecyclerView mMoviesRecyclerView;
     private MovieAdapter mMovieAdapter;
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity  {
     private ImageView mMovieImage;
     private Switch mSwitchSorting;
     List<Movie> mMoviesList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +59,7 @@ public class MainActivity extends AppCompatActivity  {
 
         mMoviesList = new ArrayList<>();
 
-        mMovieAdapter = new MovieAdapter(mMoviesList);
+        mMovieAdapter = new MovieAdapter(mMoviesList, this);
         GridLayoutManager layoutManager
                 = new GridLayoutManager(this, mMovieAdapter.numberOfColumns);
 
@@ -60,7 +67,6 @@ public class MainActivity extends AppCompatActivity  {
 
         mMoviesRecyclerView.setHasFixedSize(true);
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
-
 
         mSwitchSorting = (Switch) findViewById(R.id.switch_sorting);
         loadMoviePosters();
@@ -71,9 +77,45 @@ public class MainActivity extends AppCompatActivity  {
             }
         });
 
+        //Save switch state in shared preferences BEGINNING
+        SharedPreferences sharedPreferences = getSharedPreferences("save", MODE_PRIVATE);
+        mSwitchSorting.setChecked(sharedPreferences.getBoolean("value", true));
+
+        mSwitchSorting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mSwitchSorting.isChecked()) {
+                    SharedPreferences.Editor editor = getSharedPreferences("save", MODE_PRIVATE).edit();
+                    editor.putBoolean("value", true);
+                    editor.apply();
+                    mSwitchSorting.setChecked(true);
+                }
+                else {
+                    SharedPreferences.Editor editor = getSharedPreferences("save", MODE_PRIVATE).edit();
+                    editor.putBoolean("value",false);
+                    editor.apply();
+                    mSwitchSorting.setChecked(false);
+                }
+            }
+        });
+        //Save switch state in shared preferences END
     }
 
+    @Override
+    public void onClick(int index) {
+        Context context = this;
+        Class destinationClass = MovieActivity.class;
+        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+        // COMPLETED (1) Pass the weather to the DetailActivity
+        Movie movie = mMovieAdapter.getmMoviesList().get(index);
+        intentToStartDetailActivity.putExtra("posterPath",NetworkUtils.getURLBaseAndSizeForPoster()+movie.getPosterPath());
+        intentToStartDetailActivity.putExtra("title",movie.getOriginalTitle());
+        intentToStartDetailActivity.putExtra("year",movie.getReleaseDate());
+        intentToStartDetailActivity.putExtra("rating",movie.getVoteAverage());
+        intentToStartDetailActivity.putExtra("overview",movie.getOverview());
 
+        startActivity(intentToStartDetailActivity);
+    }
     private void loadMoviePosters() {
         showPosters();
         new FetchMoviesTask().execute(mSwitchSorting.isChecked());
