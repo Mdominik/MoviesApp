@@ -58,12 +58,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        Log.i("POSITION BIND HOLDER ", String.valueOf(position));
         Movie movie = mMoviesList.get(position);
-        Log.i("MOVIE BIND HOLDER", mMoviesList.get(position).getOriginalTitle());
         String posterPath = movie.getPosterPath();
-
-        Log.i("POSTER PATH", NetworkUtils.buildUrlForPoster(posterPath));
         Picasso.get().load(NetworkUtils.buildUrlForPoster(posterPath)).into(holder.mMovieImageView);
     }
 

@@ -4,6 +4,7 @@ public class Movie {
     public Movie() {
     }
 
+    //every field corresponds to JSON field
     public Movie(String originalTitle, String posterPath, String overview, String releaseDate, Double voteAverage, String backgroundPath) {
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;
