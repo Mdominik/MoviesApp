@@ -22,7 +22,25 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
     List<Movie> mMoviesList;
-    public int numberOfColumns = 2;
+
+    public int getNumberColumnsVertical() {
+        return numberColumnsVertical;
+    }
+
+    public void setNumberColumnsVertical(int numberColumnsVertical) {
+        this.numberColumnsVertical = numberColumnsVertical;
+    }
+
+    public int getNumberColumnsHorizontal() {
+        return numberColumnsHorizontal;
+    }
+
+    public void setNumberColumnsHorizontal(int numberColumnsHorizontal) {
+        this.numberColumnsHorizontal = numberColumnsHorizontal;
+    }
+
+    private int numberColumnsVertical = 2;
+    private int numberColumnsHorizontal = 3;
     public List<Movie> getmMoviesList() {
         return mMoviesList;
     }

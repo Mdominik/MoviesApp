@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,8 +64,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mMoviesList = new ArrayList<>();
 
         mMovieAdapter = new MovieAdapter(mMoviesList, this);
+
+        //check the current rotation (vertical or horizontal).
+        //generate 2 columns for vertical pattern, 3 for horizontal
+        int cols = 2;
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            cols = mMovieAdapter.getNumberColumnsVertical();
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            cols = mMovieAdapter.getNumberColumnsHorizontal();
+        }
+
         GridLayoutManager layoutManager
-                = new GridLayoutManager(this, mMovieAdapter.numberOfColumns);
+                = new GridLayoutManager(this,cols);
 
         mMoviesRecyclerView.setLayoutManager(layoutManager);
 
