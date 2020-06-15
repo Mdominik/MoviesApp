@@ -2,19 +2,13 @@ package com.example.moviesapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.moviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
-
-import java.text.ParseException;
 
 public class MovieActivity extends AppCompatActivity {
     private TextView mTitleDisplay;
@@ -58,7 +52,7 @@ public class MovieActivity extends AppCompatActivity {
             }
             if (intentThatStartedThisActivity.hasExtra("rating")) {
                 Double rating= intentThatStartedThisActivity.getDoubleExtra("rating", 0.0);
-                mRatingTextDisplay.setText(String.valueOf(rating)+"/10");
+                mRatingTextDisplay.setText(rating+"/10");
                 //mRatingDisplay.setRating(Float.parseFloat(rating));
             }
             if (intentThatStartedThisActivity.hasExtra("backgroundPath")) {

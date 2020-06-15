@@ -13,26 +13,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.moviesapp.utilities.MoviesAPIJsonUtils;
 import com.example.moviesapp.utilities.NetworkUtils;
-import com.squareup.picasso.Picasso;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.example.moviesapp.MovieAdapter.MovieAdapterOnClickHandler;
 
@@ -43,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     private RecyclerView mMoviesRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView mErrorMessageDisplay;
-    private ImageView mMovieImage;
     private Switch mSwitchSorting;
     List<Movie> mMoviesList;
     private ProgressBar mLoading;
@@ -52,9 +41,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mMovieImage = (ImageView) findViewById(R.id.movieItem);
-        //Picasso.get().load("http://i.imgur.com/DvpvklR.png").into(mMovieImage);
-
         mMoviesRecyclerView = (RecyclerView) findViewById(R.id.rv_all_movies);
 
         mLoading = (ProgressBar) findViewById(R.id.pb_loading);
@@ -91,7 +77,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
             }
         });
 
-        //Save switch state in shared preferences BEGINNING
+        //Save switch state in shared preferences so that the main activity state (sorting pattern) is restored
+        // after returning from DetailActivity
+        // BEGINNING
         SharedPreferences sharedPreferences = getSharedPreferences("save", MODE_PRIVATE);
         mSwitchSorting.setChecked(sharedPreferences.getBoolean("value", true));
 
@@ -112,15 +100,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 }
             }
         });
-        //Save switch state in shared preferences END
+        //END
     }
 
     @Override
     public void onClick(int index) {
+
+        //create new Intent (detailactivity)
         Context context = this;
         Class destinationClass = MovieActivity.class;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        // COMPLETED (1) Pass the weather to the DetailActivity
+
+        //send movie data to the new Intent. Also possible to send the object with Parcelable?
         Movie movie = mMovieAdapter.getmMoviesList().get(index);
         intentToStartDetailActivity.putExtra("posterPath",NetworkUtils.getURLBaseAndSizeForPoster()+movie.getPosterPath());
         intentToStartDetailActivity.putExtra("title",movie.getOriginalTitle());
@@ -189,12 +180,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
             if (movies != null) {
                 mMovieAdapter.setMoviesData(movies);
                 showPosters();
-                for(Movie m : mMovieAdapter.getmMoviesList()) {
-                }
             } else {
                 showError();
-                for(Movie m :  mMovieAdapter.getmMoviesList()) {
-                }
             }
         }
 

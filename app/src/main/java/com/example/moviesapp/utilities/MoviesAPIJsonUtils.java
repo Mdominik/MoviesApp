@@ -1,8 +1,6 @@
 package com.example.moviesapp.utilities;
 
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 
 import com.example.moviesapp.Movie;
 
@@ -10,11 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MoviesAPIJsonUtils {
 
@@ -37,7 +31,9 @@ public class MoviesAPIJsonUtils {
         } catch(JSONException e) {
             e.printStackTrace();
         }
-
+        if (moviesArray == null) {
+            return new ArrayList<>();
+        }
         for(int i=0; i < moviesArray.length(); i++) {
             JSONObject singleMovie=null;
 

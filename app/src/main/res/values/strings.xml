@@ -4,4 +4,11 @@
     <string name="by_rating_name">rating</string>
     <string name="by_popularity_name">popularity</string>
     <string name="error_message">Error!</string>
+    <string name="off_name">OFF</string>
+    <string name="on_name">ON</string>
+    <string name="network_error_name">Network error. Check internet connection.</string>
+    <string name="alternativeTextBackdrop">backdrop image</string>
+    <string name="alternativeTextPoster">poster image</string>
+    <string name="production_year_name">production year</string>
+    <string name="rating_name">rating</string>
 </resources>
