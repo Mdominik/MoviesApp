@@ -11,4 +11,5 @@
     <string name="alternativeTextPoster">poster image</string>
     <string name="production_year_name">production year</string>
     <string name="rating_name">rating</string>
+    <string name="action_settings">Preferences</string>
 </resources>

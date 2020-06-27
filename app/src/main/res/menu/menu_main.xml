@@ -1,0 +1,36 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.myapplication.MainActivity">
+    <item
+        android:id="@+id/menu_item_share"
+        android:orderInCategory="100"
+        android:icon="@drawable/abc_vector_test"
+        android:title="share"
+        app:showAsAction="ifRoom" />
+    <group android:id="@+id/g_sorting">
+        <item
+            android:id="@+id/sortByPopularity"
+            android:orderInCategory="100"
+            android:title="show popular"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/sortByTopRated"
+            android:orderInCategory="100"
+            android:title="show top rated"
+            app:showAsAction="never" />
+
+        <item
+            android:id="@+id/sortByFavourites"
+            android:orderInCategory="100"
+            android:title="show my favourites"
+            app:showAsAction="never" />
+    </group>
+    <group android:id="@+id/g_preferences">
+        <item
+            android:id="@+id/nightMode"
+            android:orderInCategory="100"
+            android:title="Day/Night mode"
+            app:showAsAction="never" />
+    </group>
+</menu>

@@ -2,7 +2,7 @@ package com.example.moviesapp.utilities;
 
 import android.content.Context;
 
-import com.example.moviesapp.Movie;
+import com.example.moviesapp.api.model.Movie;
 
 import org.json.JSONArray;
 import org.json.JSONException;

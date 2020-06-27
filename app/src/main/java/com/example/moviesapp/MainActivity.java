@@ -1,5 +1,6 @@
 package com.example.moviesapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,12 +12,17 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.moviesapp.api.model.Movie;
+import com.example.moviesapp.background.MovieBackgroundService;
 import com.example.moviesapp.utilities.MoviesAPIJsonUtils;
 import com.example.moviesapp.utilities.NetworkUtils;
 
@@ -29,26 +35,27 @@ import com.example.moviesapp.MovieAdapter.MovieAdapterOnClickHandler;
 
 
 public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler {
-
+    private int currentSorting=1;
     private RecyclerView mMoviesRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView mErrorMessageDisplay;
     private Switch mSwitchSorting;
     List<Movie> mMoviesList;
     private ProgressBar mLoading;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mMoviesRecyclerView = (RecyclerView) findViewById(R.id.rv_all_movies);
 
+        //1)
+        //RECYCLER VIEW PART BEGIN
+        mMoviesRecyclerView = (RecyclerView) findViewById(R.id.rv_all_movies);
         mLoading = (ProgressBar) findViewById(R.id.pb_loading);
         mLoading.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error);
-
         mMoviesList = new ArrayList<>();
-
         mMovieAdapter = new MovieAdapter(mMoviesList, this);
 
         //check the current rotation (vertical or horizontal).
@@ -64,43 +71,83 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 = new GridLayoutManager(this,cols);
 
         mMoviesRecyclerView.setLayoutManager(layoutManager);
-
         mMoviesRecyclerView.setHasFixedSize(true);
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
+        //RECYCLER VIEW PART END
 
-        mSwitchSorting = (Switch) findViewById(R.id.switch_sorting);
-        loadMoviePosters();
-        mSwitchSorting.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        //register listener for updating sharedpreferences
+        sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
+        SharedPreferences.OnSharedPreferenceChangeListener listner;
+
+        listner = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                loadMoviePosters();
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                Log.i("Retrieving sorting","REEE");
+                sendNetworkRequest();
             }
-        });
+        };
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listner);
+    }
 
-        //Save switch state in shared preferences so that the main activity state (sorting pattern) is restored
-        // after returning from DetailActivity
-        // BEGINNING
-        SharedPreferences sharedPreferences = getSharedPreferences("save", MODE_PRIVATE);
-        mSwitchSorting.setChecked(sharedPreferences.getBoolean("value", true));
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
-        mSwitchSorting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mSwitchSorting.isChecked()) {
-                    SharedPreferences.Editor editor = getSharedPreferences("save", MODE_PRIVATE).edit();
-                    editor.putBoolean("value", true);
-                    editor.apply();
-                    mSwitchSorting.setChecked(true);
-                }
-                else {
-                    SharedPreferences.Editor editor = getSharedPreferences("save", MODE_PRIVATE).edit();
-                    editor.putBoolean("value",false);
-                    editor.apply();
-                    mSwitchSorting.setChecked(false);
-                }
-            }
-        });
-        //END
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        Log.i("Retrieving sorting", ""+getSharedPreferences("sort", MODE_PRIVATE).getInt("int_sorting", 0));
+        SharedPreferences.Editor editor;
+        switch(item.getItemId()){
+            case R.id.sortByPopularity:
+                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                editor.putInt("int_sorting",1);
+                currentSorting = 1;
+                editor.apply();
+                Log.i("Selecting sorting","Sorted by popular selected");
+                return true;
+
+            case R.id.sortByTopRated:
+                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                editor.putInt("int_sorting",2);
+                editor.apply();
+                currentSorting = 2;
+                Log.i("Selecting sorting","Sorted by rated selected");
+                return true;
+
+            case R.id.sortByFavourites:
+                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                editor.putInt("int_sorting",3);
+                editor.apply();
+                currentSorting = 3;
+                Log.i("Selecting sorting","Sorted by fav selected");
+                return true;
+
+            /*case R.id.nightMode:
+                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                editor.putInt("int_sorting",4);
+                editor.apply();
+                currentSorting = 4;
+                Log.i("Selecting sorting","night day mode selected");
+                return true;
+            */
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+
+    // COMPLETED (2) Override the onSharedPreferenceChanged method and update the show bass preference
+    // Updates the screen if the shared preferences change. This method is required when you make a
+    // class implement OnSharedPreferenceChangedListener
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -121,9 +168,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         intentToStartDetailActivity.putExtra("backgroundPath", NetworkUtils.getURLBaseAndSizeForBackground()+movie.getBackgroundPath());
         startActivity(intentToStartDetailActivity);
     }
-    private void loadMoviePosters() {
-        new FetchMoviesTask().execute(mSwitchSorting.isChecked());
-    }
 
     private void showPosters() {
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
@@ -143,48 +187,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mLoading.setVisibility(View.VISIBLE);
     }
 
-    public class FetchMoviesTask extends  AsyncTask<Boolean, Void, ArrayList<Movie>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgress();
-
-        }
-
-        @Override
-        protected ArrayList<Movie> doInBackground(Boolean... bool) {
-
-            if(bool.length==0) {
-                return null;
-            }
-
-            Boolean sort_by = bool[0]; // true = sort by rating, false = sort by popularity
-            URL movieRequestURL = NetworkUtils.buildUrl(sort_by);
-            Log.e("URL", movieRequestURL.toString());
-            try {
-                String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestURL);
-
-                return MoviesAPIJsonUtils.getAllMoviesFromJSON(MainActivity.this, jsonMoviesResponse);
-
-            } catch(Exception e ) {
-
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-            if (movies != null) {
-                mMovieAdapter.setMoviesData(movies);
-                showPosters();
-            } else {
-                showError();
-            }
-        }
-
-
+    private void sendNetworkRequest() {
+        Intent intent = new Intent(MainActivity.this, MovieBackgroundService.class);
+        startService(intent);
     }
+
 }

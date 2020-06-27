@@ -1,7 +1,7 @@
 package com.example.moviesapp;
 
 import android.content.Context;
-import com.example.moviesapp.Movie;
+import com.example.moviesapp.api.model.Movie;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 

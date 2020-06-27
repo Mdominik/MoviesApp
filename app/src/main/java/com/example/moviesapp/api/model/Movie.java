@@ -1,17 +1,19 @@
-package com.example.moviesapp;
+package com.example.moviesapp.api.model;
 
 public class Movie {
     public Movie() {
     }
 
     //every field corresponds to JSON field
-    public Movie(String originalTitle, String posterPath, String overview, String releaseDate, Double voteAverage, String backgroundPath) {
+    public Movie(String originalTitle, String posterPath, String overview, String releaseDate,
+                 Double voteAverage, String backgroundPath) {
         this.originalTitle = originalTitle;
         this.posterPath = posterPath;
         this.overview = overview;
         this.releaseDate = releaseDate;
         this.voteAverage = voteAverage;
         this.backgroundPath = backgroundPath;
+        this.video = video;
     }
 
     private String originalTitle;
@@ -20,6 +22,15 @@ public class Movie {
     private String releaseDate;
     private Double voteAverage;
 
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
+    }
+
+    private String video;
     public String getBackgroundPath() {
         return backgroundPath;
     }

@@ -32,7 +32,7 @@ public class MovieActivity extends AppCompatActivity {
         mBackdrop = (ImageView) findViewById(R.id.iv_backdrop);
         Intent intentThatStartedThisActivity = getIntent();
 
-        // COMPLETED (2) Display the weather forecast that was passed from MainActivity
+        // Populate views with data from JSON
         if (intentThatStartedThisActivity != null) {
             if (intentThatStartedThisActivity.hasExtra("posterPath")) {
                 String poster= intentThatStartedThisActivity.getStringExtra("posterPath");
