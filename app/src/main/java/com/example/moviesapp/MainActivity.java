@@ -22,14 +22,22 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.moviesapp.api.model.Movie;
 import com.example.moviesapp.background.MovieBackgroundService;
+import com.example.moviesapp.background.OnClickPosterListener;
+import com.example.moviesapp.background.VideosReviewsService;
 import com.example.moviesapp.utilities.CSVReader;
 import com.example.moviesapp.utilities.NetworkUtils;
 
@@ -46,7 +54,7 @@ import com.example.moviesapp.utilities.PreferencesUtils;
 import com.example.moviesapp.utilities.SortingCriteria;
 
 
-public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler, OnClickPosterListener{
     private int currentSorting = 1; // current sorting criteria
     private int cols = 2; //number of columns of posters on the screen
     private RecyclerView mMoviesRecyclerView;
@@ -57,6 +65,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     ArrayList<Movie> mMoviesList;
     private ProgressBar mLoading;
     private SharedPreferences sharedPreferences;
+    ToggleButton fav;
+    OnClickPosterListener onClickPosterListener;
+
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -89,12 +100,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mLoading.setVisibility(View.INVISIBLE);
         mErrorMessageDisplay = findViewById(R.id.tv_error);
         mMoviesList = new ArrayList<>();
-        mMovieAdapter = new MovieAdapter(mMoviesList, this);
+        mMovieAdapter = new MovieAdapter(mMoviesList, this, onClickPosterListener);
         mItemView = findViewById(R.id.movieItem);
-        Log.i("itemView", ""+(mItemView==null));
+        Log.i("itemView", "" + (mItemView == null));
         //check the current rotation (vertical or horizontal).
         //generate 2 columns for vertical pattern, 3 for horizontal
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             cols = mMovieAdapter.getNumberColumnsVertical();
 
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -107,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         }
 
         GridLayoutManager layoutManager
-                = new GridLayoutManager(this,cols);
+                = new GridLayoutManager(this, cols);
 
         mMoviesRecyclerView.setLayoutManager(layoutManager);
         mMoviesRecyclerView.setHasFixedSize(true);
@@ -123,59 +134,60 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         //first request
         sendNetworkRequest(sort);
 
+
     }
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        IntentFilter intentFilter = new IntentFilter("MovieBackgroundService");
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mReceiver,intentFilter);
-    }
+            @Override
+            protected void onStart() {
+                super.onStart();
+                IntentFilter intentFilter = new IntentFilter("MovieBackgroundService");
+                LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mReceiver, intentFilter);
+            }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);
-    }
+            @Override
+            protected void onStop() {
+                super.onStop();
+                LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);
+            }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-        Log.i("Retrieving sorting", ""+getSharedPreferences("sort", MODE_PRIVATE).getInt("int_sorting", 0));
-        SharedPreferences.Editor editor;
-        switch(item.getItemId()){
-            case R.id.sortByPopularity:
-                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
-                editor.putInt("int_sorting",1);
-                currentSorting = 1;
-                editor.apply();
-                Log.i("Selecting sorting","Sorted by popular selected");
-                sendNetworkRequest(currentSorting);
+            @Override
+            public boolean onCreateOptionsMenu(Menu menu) {
+                MenuInflater inflater = getMenuInflater();
+                inflater.inflate(R.menu.menu_main, menu);
                 return true;
-            case R.id.sortByTopRated:
-                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
-                editor.putInt("int_sorting",2);
-                editor.apply();
-                currentSorting = 2;
-                Log.i("Selecting sorting","Sorted by rated selected");
-                sendNetworkRequest(currentSorting);
-                return true;
-            case R.id.sortByUpcoming:
-                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
-                editor.putInt("int_sorting",3);
-                editor.apply();
-                currentSorting = 3;
-                Log.i("Selecting sorting","Sorted by upcoming selected");
-                sendNetworkRequest(currentSorting);
-                return true;
+            }
+
+            @Override
+            public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+                Log.i("Retrieving sorting", "" + getSharedPreferences("sort", MODE_PRIVATE).getInt("int_sorting", 0));
+                SharedPreferences.Editor editor;
+                switch (item.getItemId()) {
+                    case R.id.sortByPopularity:
+                        editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                        editor.putInt("int_sorting", 1);
+                        currentSorting = 1;
+                        editor.apply();
+                        Log.i("Selecting sorting", "Sorted by popular selected");
+                        sendNetworkRequest(currentSorting);
+                        return true;
+                    case R.id.sortByTopRated:
+                        editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                        editor.putInt("int_sorting", 2);
+                        editor.apply();
+                        currentSorting = 2;
+                        Log.i("Selecting sorting", "Sorted by rated selected");
+                        sendNetworkRequest(currentSorting);
+                        return true;
+                    case R.id.sortByUpcoming:
+                        editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                        editor.putInt("int_sorting", 3);
+                        editor.apply();
+                        currentSorting = 3;
+                        Log.i("Selecting sorting", "Sorted by upcoming selected");
+                        sendNetworkRequest(currentSorting);
+                        return true;
 
 
             /*case R.id.nightMode:
@@ -186,63 +198,67 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 Log.i("Selecting sorting","night day mode selected");
                 return true;
             */
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+                    default:
+                        return super.onOptionsItemSelected(item);
+                }
 
-    }
+            }
 
 
-    // COMPLETED (2) Override the onSharedPreferenceChanged method and update the show bass preference
-    // Updates the screen if the shared preferences change. This method is required when you make a
-    // class implement OnSharedPreferenceChangedListener
+            // COMPLETED (2) Override the onSharedPreferenceChanged method and update the show bass preference
+            // Updates the screen if the shared preferences change. This method is required when you make a
+            // class implement OnSharedPreferenceChangedListener
+
+            @Override
+            protected void onDestroy() {
+                super.onDestroy();
+            }
+
+            @Override
+            public void onClick(int index) {
+
+                //create new Intent (detailactivity)
+                Context context = this;
+                Class destinationClass = MovieActivity.class;
+                Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+
+                //send movie data to the new Intent. Also possible to send the object with Parcelable?
+                Movie movie = mMovieAdapter.getmMoviesList().get(index);
+
+                //Movie object is parcelable
+                intentToStartDetailActivity.putExtra("movie", movie);
+                startActivity(intentToStartDetailActivity);
+            }
+
+            private void showPosters() {
+                mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+                mMoviesRecyclerView.setVisibility(View.VISIBLE);
+                mLoading.setVisibility(View.INVISIBLE);
+            }
+
+            private void showError() {
+                mErrorMessageDisplay.setVisibility(View.VISIBLE);
+                mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+                mLoading.setVisibility(View.INVISIBLE);
+            }
+
+            private void showProgress() {
+                mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+                mMoviesRecyclerView.setVisibility(View.INVISIBLE);
+                mLoading.setVisibility(View.VISIBLE);
+            }
+
+            private void sendNetworkRequest(int sorting_criteria) {
+                showProgress();
+                Intent intent = new Intent(MainActivity.this, MovieBackgroundService.class);
+                intent.putExtra("sortOption", sorting_criteria);
+                Log.i("In sendNetworkRequest", "executing");
+
+                startService(intent);
+            }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onClick() {
+        startService(new Intent(MainActivity.this, VideosReviewsService.class));
     }
-
-    @Override
-    public void onClick(int index) {
-
-        //create new Intent (detailactivity)
-        Context context = this;
-        Class destinationClass = MovieActivity.class;
-        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-
-        //send movie data to the new Intent. Also possible to send the object with Parcelable?
-        Movie movie = mMovieAdapter.getmMoviesList().get(index);
-
-        //Movie object is parcelable
-        intentToStartDetailActivity.putExtra("movie", movie);
-        startActivity(intentToStartDetailActivity);
-    }
-
-    private void showPosters() {
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mMoviesRecyclerView.setVisibility(View.VISIBLE);
-        mLoading.setVisibility(View.INVISIBLE);
-    }
-
-    private void showError() {
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
-        mMoviesRecyclerView.setVisibility(View.INVISIBLE);
-        mLoading.setVisibility(View.INVISIBLE);
-    }
-
-    private void showProgress() {
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
-        mMoviesRecyclerView.setVisibility(View.INVISIBLE);
-        mLoading.setVisibility(View.VISIBLE);
-    }
-
-    private void sendNetworkRequest(int sorting_criteria) {
-        showProgress();
-        Intent intent = new Intent(MainActivity.this, MovieBackgroundService.class);
-        intent.putExtra("sortOption", sorting_criteria);
-        Log.i("In sendNetworkRequest", "executing");
-
-        startService(intent);
-    }
-
 }

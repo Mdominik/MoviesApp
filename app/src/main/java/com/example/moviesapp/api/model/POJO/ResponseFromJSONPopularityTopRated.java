@@ -1,6 +1,8 @@
-package com.example.moviesapp.api.model;
+package com.example.moviesapp.api.model.POJO;
 
 import java.util.List;
+
+import com.example.moviesapp.api.model.Movie;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

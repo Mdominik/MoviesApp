@@ -2,7 +2,6 @@ package com.example.moviesapp.background;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,8 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.moviesapp.api.model.Movie;
-import com.example.moviesapp.api.model.ResponseFromJSONPopularityTopRated;
-import com.example.moviesapp.api.model.ResponseFromJSONUpcoming;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONPopularityTopRated;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONUpcoming;
 import com.example.moviesapp.api.service.MovieClient;
 import com.example.moviesapp.utilities.CSVReader;
 import com.example.moviesapp.utilities.NetworkUtils;
@@ -22,7 +21,6 @@ import com.example.moviesapp.utilities.PreferencesUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -82,16 +80,16 @@ public class MovieBackgroundService extends IntentService{
         switch(sortOption) {
 
             case 1:
-                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
                 break;
             case 2:
-                callPopularityTopRated = client.getTopRatedMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
+                callPopularityTopRated = client.getTopRatedMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
                 break;
             case 3:
-                callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
+                callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
                 break;
             default:
-                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
         }
         try{
             if(sortOption == 1 || sortOption == 2) {

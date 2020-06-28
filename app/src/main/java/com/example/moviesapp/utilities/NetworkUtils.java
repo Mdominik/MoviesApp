@@ -22,7 +22,7 @@ public class NetworkUtils {
 
     //I'm using this additional parameter for top rated movies in order to filter the minor movies
     public final static String URL_VOTECOUNT_GREATER_THAN = "vote_count.gte";
-    public final static String URL_VOTECOUNT_GREATER_THAN_VALUE = "5000";
+    public final static String URL_VOTECOUNT_GREATER_THAN_VALUE = "200000";
     public final static String URL_BASE_FOR_POSTER = "https://image.tmdb.org/t/p/";
     public final static String URL_SIZE_POSTER = "w185";
     public final static String URL_SIZE_BACKGROUND = "w342";

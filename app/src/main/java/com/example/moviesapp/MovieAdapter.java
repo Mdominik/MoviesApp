@@ -3,6 +3,7 @@ package com.example.moviesapp;
 import android.content.Context;
 
 import com.example.moviesapp.api.model.Movie;
+import com.example.moviesapp.background.OnClickPosterListener;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
@@ -45,10 +46,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public void setmMoviesList(List<Movie> mMoviesList) {
         this.mMoviesList = mMoviesList;
     }
-
-    public MovieAdapter(List<Movie> movies, MovieAdapterOnClickHandler mClickHandler) {
+    private OnClickPosterListener listener;
+    public MovieAdapter(List<Movie> movies, MovieAdapterOnClickHandler mClickHandler, OnClickPosterListener listener) {
         this.mMoviesList = movies;
         this.mClickHandler = mClickHandler;
+        this.listener = listener;
     }
 
     private final MovieAdapterOnClickHandler mClickHandler;
@@ -68,7 +70,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         LayoutInflater inflater = LayoutInflater.from(context);
 
         View view = inflater.inflate(layoutId, parent, false);
-        return new MovieAdapterViewHolder(view);
+        return new MovieAdapterViewHolder(view, listener);
     }
 
     @Override
@@ -92,9 +94,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         //ImageView to store the poster picture
         public ImageView mMovieImageView;
-
-        public MovieAdapterViewHolder(View itemView) {
+        private OnClickPosterListener listener;
+        public MovieAdapterViewHolder(View itemView, OnClickPosterListener listener) {
             super(itemView);
+            this.listener = listener;
             mMovieImageView = (ImageView) itemView.findViewById(R.id.movieItem);
             itemView.setOnClickListener(this);
         }
@@ -102,6 +105,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
+
             mClickHandler.onClick(adapterPosition);
         }
     }

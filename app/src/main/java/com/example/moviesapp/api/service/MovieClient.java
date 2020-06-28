@@ -1,7 +1,9 @@
 package com.example.moviesapp.api.service;
 
-import com.example.moviesapp.api.model.ResponseFromJSONPopularityTopRated;
-import com.example.moviesapp.api.model.ResponseFromJSONUpcoming;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONPopularityTopRated;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONReviews;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONUpcoming;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONVideos;
 import com.example.moviesapp.api.model.Review;
 import com.example.moviesapp.api.model.Video;
 
@@ -27,11 +29,11 @@ public interface MovieClient {
 
     //what datatype of video?
     @GET("movie/{id}/videos")
-    Call<List<Video>> getVideoByMovieID(@Path("id") int id);
+    Call<ResponseFromJSONVideos> getVideoByMovieID(@Path("id") int id);
 
     //what datatype of video?
-    @GET("movie/{id}/review")
-    Call<List<Review>> getReviewsByMovieID(@Path("id") int id);
+    @GET("movie/{id}/reviews")
+    Call<ResponseFromJSONReviews> getReviewsByMovieID(@Path("id") int id);
 
 
 

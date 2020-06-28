@@ -1,27 +1,36 @@
-package com.example.moviesapp.api.model;
+package com.example.moviesapp.api.model.POJO;
 
-import java.util.Date;
 import java.util.List;
+
+import com.example.moviesapp.api.model.Review;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ResponseFromJSONUpcoming {
+public class ResponseFromJSONReviews {
 
+    @SerializedName("id")
+    @Expose
+    private Integer id;
     @SerializedName("page")
     @Expose
     private Integer page;
     @SerializedName("results")
     @Expose
-    private List<Movie> movies = null;
-    @SerializedName("dates")
-    @Expose
-    private Dates dates;
+    private List<Review> reviews = null;
     @SerializedName("total_pages")
     @Expose
     private Integer totalPages;
     @SerializedName("total_results")
     @Expose
     private Integer totalResults;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Integer getPage() {
         return page;
@@ -31,20 +40,12 @@ public class ResponseFromJSONUpcoming {
         this.page = page;
     }
 
-    public List<Movie> getMovies() {
-        return movies;
+    public List<Review> getReviews() {
+        return reviews;
     }
 
-    public void setMovies(List<Movie> results) {
-        this.movies = results;
-    }
-
-    public Dates getDates() {
-        return dates;
-    }
-
-    public void setDates(Dates dates) {
-        this.dates = dates;
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 
     public Integer getTotalPages() {
