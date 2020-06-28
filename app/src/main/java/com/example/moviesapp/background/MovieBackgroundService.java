@@ -1,9 +1,9 @@
 package com.example.moviesapp.background;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
+import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -11,16 +11,18 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.example.moviesapp.MainActivity;
 import com.example.moviesapp.api.model.Movie;
-import com.example.moviesapp.api.model.ResponseFromJSON;
+import com.example.moviesapp.api.model.ResponseFromJSONPopularityTopRated;
+import com.example.moviesapp.api.model.ResponseFromJSONUpcoming;
 import com.example.moviesapp.api.service.MovieClient;
+import com.example.moviesapp.utilities.CSVReader;
 import com.example.moviesapp.utilities.NetworkUtils;
+import com.example.moviesapp.utilities.PreferencesUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -66,35 +68,47 @@ public class MovieBackgroundService extends IntentService{
 
         Retrofit retrofit = builder.build();
         MovieClient client = retrofit.create(MovieClient.class);
-        Call<ResponseFromJSON> call = null;
+        Call<ResponseFromJSONPopularityTopRated> callPopularityTopRated = null;
+        Call<ResponseFromJSONUpcoming> callUpcoming = null;
+        Response<ResponseFromJSONPopularityTopRated> resultPopularityTopRated=null;
+        Response<ResponseFromJSONUpcoming> resultUpcoming=null;
+        ArrayList<Movie> movies = null;
+        try {
+            AssetManager am = getAssets();
+            InputStream inputStream = am.open("languages.csv");
+            PreferencesUtils.setLanguages(CSVReader.getLanguagesForJSON(inputStream));
+
+        } catch(IOException e) {Log.i("NIE DZIALA", "REE");}
         switch(sortOption) {
+
             case 1:
-                call = client.getPopularMovie();
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
                 break;
             case 2:
-                call = client.getTopRatedMovie();
+                callPopularityTopRated = client.getTopRatedMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
+                break;
+            case 3:
+                callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
                 break;
             default:
-                call = client.getPopularMovie();
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("Polish"));
         }
         try{
-            Response<ResponseFromJSON> result = call.execute();
-            Log.i("MOVIES", result.body().getMovies().get(0).getOriginalTitle());
-            Log.i("Retrofit data", result.toString());
+            if(sortOption == 1 || sortOption == 2) {
+                resultPopularityTopRated = callPopularityTopRated.execute();
+                movies = (ArrayList<Movie>)resultPopularityTopRated.body().getMovies();
+            }
+            else if(sortOption == 3) {
+                resultUpcoming = callUpcoming.execute();
+                movies = (ArrayList<Movie>)resultUpcoming.body().getMovies();
+            }
             Log.i("Retrofit","Success!");
+            Log.i("sort",""+getSharedPreferences("sort", MODE_PRIVATE).getInt("sort",0));
 
-            ArrayList<Movie> movies = (ArrayList<Movie>)result.body().getMovies();
             //send it to MainActivity:
-
             Intent resultIntent = new Intent("MovieBackgroundService");
             resultIntent.putParcelableArrayListExtra("movies", movies);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
-
-
-//            Intent intentBackToMain = new Intent(MovieBackgroundService.this, MainActivity.class);
-//            intentBackToMain.putParcelableArrayListExtra("movies", movies); // Be sure con is not null here
-//            intentBackToMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(intentBackToMain);
         }catch(IOException ioe) {
             Log.i("Retrofit","Failure!");
         }

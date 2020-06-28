@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.moviesapp.api.model.Movie;
+import com.example.moviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 public class MovieActivity extends AppCompatActivity {
@@ -19,8 +21,9 @@ public class MovieActivity extends AppCompatActivity {
     private ImageView mPoster;
     private ImageView mBackdrop;
     boolean rememberSwitch;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_details_activity);
         mTitleDisplay = (TextView) findViewById(R.id.tv_original_title);
@@ -30,36 +33,33 @@ public class MovieActivity extends AppCompatActivity {
         mOverviewDisplay = (TextView) findViewById(R.id.tv_overview);
         mPoster = (ImageView) findViewById(R.id.iv_poster_detail);
         mBackdrop = (ImageView) findViewById(R.id.iv_backdrop);
+        Movie movie = null;
         Intent intentThatStartedThisActivity = getIntent();
-
-        // Populate views with data from JSON
         if (intentThatStartedThisActivity != null) {
-            if (intentThatStartedThisActivity.hasExtra("posterPath")) {
-                String poster= intentThatStartedThisActivity.getStringExtra("posterPath");
-                Picasso.get().load(poster).into(mPoster);
-            }
-            if (intentThatStartedThisActivity.hasExtra("title")) {
-                String poster= intentThatStartedThisActivity.getStringExtra("title");
+            movie = intentThatStartedThisActivity.getParcelableExtra("movie");
+
+            if (movie != null) {
+                String posterURL = NetworkUtils.getURLBaseAndSizeForPoster() + movie.getPosterPath();
+                Picasso.get().load(posterURL).into(mPoster);
+
+                String poster = movie.getTitle();
                 mTitleDisplay.setText(poster);
-            }
-            if (intentThatStartedThisActivity.hasExtra("year")) {
-                String year= intentThatStartedThisActivity.getStringExtra("year");
+
+                String year = movie.getReleaseDate().substring(0, 4);
                 mYearDisplay.setText(year);
-            }
-            if (intentThatStartedThisActivity.hasExtra("overview")) {
-                String overview= intentThatStartedThisActivity.getStringExtra("overview");
+
+                String overview = movie.getOverview().length() == 0 ? "No description in your language, sorry!" : movie.getOverview();
                 mOverviewDisplay.setText(overview);
-            }
-            if (intentThatStartedThisActivity.hasExtra("rating")) {
-                Double rating= intentThatStartedThisActivity.getDoubleExtra("rating", 0.0);
-                mRatingTextDisplay.setText(rating+"/10");
-                //mRatingDisplay.setRating(Float.parseFloat(rating));
-            }
-            if (intentThatStartedThisActivity.hasExtra("backgroundPath")) {
-                String path = intentThatStartedThisActivity.getStringExtra("backgroundPath");
+
+                Double rating = movie.getVoteAverage();
+                mRatingTextDisplay.setText(rating + "/10");
+
+                String path = NetworkUtils.getURLBaseAndSizeForBackground() + movie.getBackdropPath();
                 Picasso.get().load(path).into(mBackdrop);
+
+                return;
             }
         }
+        return;
     }
-
 }

@@ -2,42 +2,57 @@ package com.example.moviesapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.moviesapp.api.model.Movie;
 import com.example.moviesapp.background.MovieBackgroundService;
+import com.example.moviesapp.utilities.CSVReader;
 import com.example.moviesapp.utilities.NetworkUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.example.moviesapp.MovieAdapter.MovieAdapterOnClickHandler;
-
+import com.example.moviesapp.utilities.PreferencesUtils;
+import com.example.moviesapp.utilities.SortingCriteria;
 
 
 public class MainActivity extends AppCompatActivity implements MovieAdapterOnClickHandler {
-    private int currentSorting=1;
+    private int currentSorting = 1; // current sorting criteria
+    private int cols = 2; //number of columns of posters on the screen
     private RecyclerView mMoviesRecyclerView;
     private MovieAdapter mMovieAdapter;
     private TextView mErrorMessageDisplay;
+    private ImageView mItemView;
     private Switch mSwitchSorting;
     ArrayList<Movie> mMoviesList;
     private ProgressBar mLoading;
@@ -61,6 +76,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        //languages
+        InputStream inputStream = getResources().openRawResource(R.raw.languages);
+        PreferencesUtils.setLanguages(CSVReader.getLanguagesForJSON(inputStream));
+
+        //0) temporary for languages csv
         //1)
         //RECYCLER VIEW PART BEGIN
         mMoviesRecyclerView = findViewById(R.id.rv_all_movies);
@@ -69,14 +90,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mErrorMessageDisplay = findViewById(R.id.tv_error);
         mMoviesList = new ArrayList<>();
         mMovieAdapter = new MovieAdapter(mMoviesList, this);
-
+        mItemView = findViewById(R.id.movieItem);
+        Log.i("itemView", ""+(mItemView==null));
         //check the current rotation (vertical or horizontal).
         //generate 2 columns for vertical pattern, 3 for horizontal
-        int cols = 2;
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             cols = mMovieAdapter.getNumberColumnsVertical();
+
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             cols = mMovieAdapter.getNumberColumnsHorizontal();
+
+            //Fixing no margin bug in horizontal view
+//            ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+//            lp.setMargins(10,0,10,10);
+//            mItemView.setLayoutParams(lp);
         }
 
         GridLayoutManager layoutManager
@@ -89,20 +116,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         //retrieving data from API
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
+
+        //current sorting criteria
         int sort = sharedPreferences.getInt("int_sorting", 0);
+
+        //first request
         sendNetworkRequest(sort);
-        //register listener for updating sharedpreferences BEGIN
-//        sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
-//        SharedPreferences.OnSharedPreferenceChangeListener listner;
-//        listner = new SharedPreferences.OnSharedPreferenceChangeListener() {
-//            @Override
-//            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-//                Log.i("Retrieving sorting","REEE");
-//                sendNetworkRequest();
-//            }
-//        };
-//        sharedPreferences.registerOnSharedPreferenceChangeListener(listner);
-        //register listener for updating sharedpreferences END
+
     }
 
 
@@ -148,14 +168,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 Log.i("Selecting sorting","Sorted by rated selected");
                 sendNetworkRequest(currentSorting);
                 return true;
-            case R.id.sortByFavourites:
+            case R.id.sortByUpcoming:
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting",3);
                 editor.apply();
                 currentSorting = 3;
-                Log.i("Selecting sorting","Sorted by fav selected");
+                Log.i("Selecting sorting","Sorted by upcoming selected");
                 sendNetworkRequest(currentSorting);
                 return true;
+
+
             /*case R.id.nightMode:
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting",4);
@@ -190,12 +212,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         //send movie data to the new Intent. Also possible to send the object with Parcelable?
         Movie movie = mMovieAdapter.getmMoviesList().get(index);
-        intentToStartDetailActivity.putExtra("posterPath",NetworkUtils.getURLBaseAndSizeForPoster()+movie.getPosterPath());
-        intentToStartDetailActivity.putExtra("title",movie.getOriginalTitle());
-        intentToStartDetailActivity.putExtra("year",movie.getReleaseDate());
-        intentToStartDetailActivity.putExtra("rating",movie.getVoteAverage());
-        intentToStartDetailActivity.putExtra("overview",movie.getOverview());
-        intentToStartDetailActivity.putExtra("backgroundPath", NetworkUtils.getURLBaseAndSizeForBackground()+movie.getBackdropPath());
+
+        //Movie object is parcelable
+        intentToStartDetailActivity.putExtra("movie", movie);
         startActivity(intentToStartDetailActivity);
     }
 
@@ -217,10 +236,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mLoading.setVisibility(View.VISIBLE);
     }
 
-    private void sendNetworkRequest(int sortOption) {
+    private void sendNetworkRequest(int sorting_criteria) {
         showProgress();
         Intent intent = new Intent(MainActivity.this, MovieBackgroundService.class);
-        intent.putExtra("sortOption", sortOption);
+        intent.putExtra("sortOption", sorting_criteria);
         Log.i("In sendNetworkRequest", "executing");
 
         startService(intent);
