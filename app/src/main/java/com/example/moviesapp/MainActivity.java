@@ -9,24 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.moviesapp.api.model.Movie;
 import com.example.moviesapp.background.MovieBackgroundService;
-import com.example.moviesapp.utilities.MoviesAPIJsonUtils;
 import com.example.moviesapp.utilities.NetworkUtils;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     private MovieAdapter mMovieAdapter;
     private TextView mErrorMessageDisplay;
     private Switch mSwitchSorting;
-    List<Movie> mMoviesList;
+    ArrayList<Movie> mMoviesList;
     private ProgressBar mLoading;
     private SharedPreferences sharedPreferences;
 
@@ -51,10 +47,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         //1)
         //RECYCLER VIEW PART BEGIN
-        mMoviesRecyclerView = (RecyclerView) findViewById(R.id.rv_all_movies);
-        mLoading = (ProgressBar) findViewById(R.id.pb_loading);
+        mMoviesRecyclerView = findViewById(R.id.rv_all_movies);
+        mLoading = findViewById(R.id.pb_loading);
         mLoading.setVisibility(View.INVISIBLE);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error);
+        mErrorMessageDisplay = findViewById(R.id.tv_error);
         mMoviesList = new ArrayList<>();
         mMovieAdapter = new MovieAdapter(mMoviesList, this);
 
@@ -75,18 +71,28 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
         //RECYCLER VIEW PART END
 
-        //register listener for updating sharedpreferences
+        //retrieving data from API
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
-        SharedPreferences.OnSharedPreferenceChangeListener listner;
+        int sort = sharedPreferences.getInt("int_sorting", 0);
+        try {
+            mMoviesList = this.getIntent().getParcelableArrayListExtra("movies");
+            Log.i("Movies list", ""+mMoviesList.size());
+            mMovieAdapter.setMoviesData(mMoviesList);
+            showPosters();
 
-        listner = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                Log.i("Retrieving sorting","REEE");
-                sendNetworkRequest();
-            }
-        };
-        sharedPreferences.registerOnSharedPreferenceChangeListener(listner);
+        } catch(NullPointerException npe) { Log.i("ParcelableMainActivity", "Null pointer!"); }
+        //register listener for updating sharedpreferences BEGIN
+//        sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
+//        SharedPreferences.OnSharedPreferenceChangeListener listner;
+//        listner = new SharedPreferences.OnSharedPreferenceChangeListener() {
+//            @Override
+//            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+//                Log.i("Retrieving sorting","REEE");
+//                sendNetworkRequest();
+//            }
+//        };
+//        sharedPreferences.registerOnSharedPreferenceChangeListener(listner);
+        //register listener for updating sharedpreferences END
     }
 
     @Override
@@ -108,24 +114,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 currentSorting = 1;
                 editor.apply();
                 Log.i("Selecting sorting","Sorted by popular selected");
+                sendNetworkRequest(currentSorting);
                 return true;
-
             case R.id.sortByTopRated:
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting",2);
                 editor.apply();
                 currentSorting = 2;
                 Log.i("Selecting sorting","Sorted by rated selected");
+                sendNetworkRequest(currentSorting);
                 return true;
-
             case R.id.sortByFavourites:
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting",3);
                 editor.apply();
                 currentSorting = 3;
                 Log.i("Selecting sorting","Sorted by fav selected");
+                sendNetworkRequest(currentSorting);
                 return true;
-
             /*case R.id.nightMode:
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting",4);
@@ -165,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         intentToStartDetailActivity.putExtra("year",movie.getReleaseDate());
         intentToStartDetailActivity.putExtra("rating",movie.getVoteAverage());
         intentToStartDetailActivity.putExtra("overview",movie.getOverview());
-        intentToStartDetailActivity.putExtra("backgroundPath", NetworkUtils.getURLBaseAndSizeForBackground()+movie.getBackgroundPath());
+        intentToStartDetailActivity.putExtra("backgroundPath", NetworkUtils.getURLBaseAndSizeForBackground()+movie.getBackdropPath());
         startActivity(intentToStartDetailActivity);
     }
 
@@ -187,8 +193,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mLoading.setVisibility(View.VISIBLE);
     }
 
-    private void sendNetworkRequest() {
+    private void sendNetworkRequest(int sortOption) {
         Intent intent = new Intent(MainActivity.this, MovieBackgroundService.class);
+        intent.putExtra("sortOption", sortOption);
+        Log.i("In sendNetworkRequest", "executing");
+
         startService(intent);
     }
 

@@ -26,7 +26,7 @@ public class NetworkUtils {
     public final static String URL_BASE_FOR_POSTER = "https://image.tmdb.org/t/p/";
     public final static String URL_SIZE_POSTER = "w185";
     public final static String URL_SIZE_BACKGROUND = "w342";
-    public final static String URL_BASE = "https://api.themoviedb.org/3/discover/";
+    public final static String URL_BASE = "https://api.themoviedb.org/3/";
 
     public static String getURLBaseAndSizeForPoster() {
         return URL_BASE_FOR_POSTER+URL_SIZE_POSTER;
