@@ -2,11 +2,14 @@ package com.example.moviesapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -39,6 +42,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     ArrayList<Movie> mMoviesList;
     private ProgressBar mLoading;
     private SharedPreferences sharedPreferences;
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(mMoviesList == null) {
+                showError();
+                return;
+            }
+            mMoviesList = intent.getParcelableArrayListExtra("movies");
+            mMovieAdapter.setMoviesData(mMoviesList);
+            showPosters();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +90,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         //retrieving data from API
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
         int sort = sharedPreferences.getInt("int_sorting", 0);
-        try {
-            mMoviesList = this.getIntent().getParcelableArrayListExtra("movies");
-            Log.i("Movies list", ""+mMoviesList.size());
-            mMovieAdapter.setMoviesData(mMoviesList);
-            showPosters();
-
-        } catch(NullPointerException npe) { Log.i("ParcelableMainActivity", "Null pointer!"); }
+        sendNetworkRequest(sort);
         //register listener for updating sharedpreferences BEGIN
 //        sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
 //        SharedPreferences.OnSharedPreferenceChangeListener listner;
@@ -93,6 +103,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 //        };
 //        sharedPreferences.registerOnSharedPreferenceChangeListener(listner);
         //register listener for updating sharedpreferences END
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter("MovieBackgroundService");
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mReceiver,intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -194,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     }
 
     private void sendNetworkRequest(int sortOption) {
+        showProgress();
         Intent intent = new Intent(MainActivity.this, MovieBackgroundService.class);
         intent.putExtra("sortOption", sortOption);
         Log.i("In sendNetworkRequest", "executing");

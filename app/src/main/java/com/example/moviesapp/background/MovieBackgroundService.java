@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.moviesapp.MainActivity;
 import com.example.moviesapp.api.model.Movie;
@@ -85,10 +86,15 @@ public class MovieBackgroundService extends IntentService{
             ArrayList<Movie> movies = (ArrayList<Movie>)result.body().getMovies();
             //send it to MainActivity:
 
-            Intent intentBackToMain = new Intent(MovieBackgroundService.this, MainActivity.class);
-            intentBackToMain.putParcelableArrayListExtra("movies", movies); // Be sure con is not null here
-            intentBackToMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intentBackToMain);
+            Intent resultIntent = new Intent("MovieBackgroundService");
+            resultIntent.putParcelableArrayListExtra("movies", movies);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
+
+
+//            Intent intentBackToMain = new Intent(MovieBackgroundService.this, MainActivity.class);
+//            intentBackToMain.putParcelableArrayListExtra("movies", movies); // Be sure con is not null here
+//            intentBackToMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            startActivity(intentBackToMain);
         }catch(IOException ioe) {
             Log.i("Retrofit","Failure!");
         }
