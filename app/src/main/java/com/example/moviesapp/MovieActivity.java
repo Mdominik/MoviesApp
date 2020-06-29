@@ -1,6 +1,9 @@
 package com.example.moviesapp;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.animation.Animation;
@@ -13,10 +16,19 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.moviesapp.api.model.Cast;
+import com.example.moviesapp.api.model.ExtendedMovie;
 import com.example.moviesapp.api.model.Movie;
+import com.example.moviesapp.api.model.Review;
+import com.example.moviesapp.api.model.Video;
+import com.example.moviesapp.background.MovieBackgroundService;
+import com.example.moviesapp.background.OtherDataService;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 public class MovieActivity extends AppCompatActivity {
     private TextView mTitleDisplay;
@@ -27,6 +39,42 @@ public class MovieActivity extends AppCompatActivity {
     private ImageView mPoster;
     private ImageView mBackdrop;
     boolean rememberSwitch;
+
+    private ExtendedMovie extendedMovie;
+    private ArrayList<Review> reviews;
+    private ArrayList<Cast> cast;
+    private ArrayList<Video> videos;
+
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            extendedMovie = intent.getParcelableExtra("extendedMovie");
+            cast = intent.getParcelableArrayListExtra("cast");
+            reviews = intent.getParcelableArrayListExtra("reviews");
+            videos = intent.getParcelableArrayListExtra("videos");
+
+            String posterURL = NetworkUtils.getURLBaseAndSizeForPoster() + extendedMovie.getPosterPath();
+            Picasso.get().load(posterURL).into(mPoster);
+
+            String poster = extendedMovie.getTitle();
+            mTitleDisplay.setText(poster);
+
+            String year = extendedMovie.getReleaseDate().substring(0, 4);
+            mYearDisplay.setText(year);
+
+            String overview = extendedMovie.getOverview().length() == 0 ? "No description in your language, sorry!" : extendedMovie.getOverview();
+            mOverviewDisplay.setText(overview);
+
+            Double rating = extendedMovie.getVoteAverage();
+            mRatingTextDisplay.setText(rating + "/10");
+
+            String path = NetworkUtils.getURLBaseAndSizeForBackground() + extendedMovie.getBackdropPath();
+            Picasso.get().load(path).into(mBackdrop);
+            Log.i("Movie Activity", "RECEIVED DATA IN BroadcastReceiver");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,32 +102,39 @@ public class MovieActivity extends AppCompatActivity {
 
             }
         });
+
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity != null) {
             movie = intentThatStartedThisActivity.getParcelableExtra("movie");
 
             if (movie != null) {
-                String posterURL = NetworkUtils.getURLBaseAndSizeForPoster() + movie.getPosterPath();
-                Picasso.get().load(posterURL).into(mPoster);
-
-                String poster = movie.getTitle();
-                mTitleDisplay.setText(poster);
-
-                String year = movie.getReleaseDate().substring(0, 4);
-                mYearDisplay.setText(year);
-
-                String overview = movie.getOverview().length() == 0 ? "No description in your language, sorry!" : movie.getOverview();
-                mOverviewDisplay.setText(overview);
-
-                Double rating = movie.getVoteAverage();
-                mRatingTextDisplay.setText(rating + "/10");
-
-                String path = NetworkUtils.getURLBaseAndSizeForBackground() + movie.getBackdropPath();
-                Picasso.get().load(path).into(mBackdrop);
-
+                //send a second request for all remaining data (reviews, cast, videos, extendedmovie)
+                sendNetworkRequestForRemainingData(movie.getId());
                 return;
             }
         }
         return;
+    }
+
+    private void sendNetworkRequestForRemainingData(int movie_id) {
+        Intent intentRemainingData = new Intent(MovieActivity.this, OtherDataService.class);
+        intentRemainingData.putExtra("movie_id", movie_id);
+        Log.i("In snedNetworkforRemai1", "Executing");
+        startService(intentRemainingData);
+
+        Log.i("In snedNetworkforRemai2", "Executing");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter("OtherDataService");
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);
     }
 }

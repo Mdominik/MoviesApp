@@ -1,5 +1,7 @@
 package com.example.moviesapp.api.service;
 
+import com.example.moviesapp.api.model.ExtendedMovie;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONCast;
 import com.example.moviesapp.api.model.POJO.ResponseFromJSONPopularityTopRated;
 import com.example.moviesapp.api.model.POJO.ResponseFromJSONReviews;
 import com.example.moviesapp.api.model.POJO.ResponseFromJSONUpcoming;
@@ -27,13 +29,19 @@ public interface MovieClient {
     Call<ResponseFromJSONUpcoming> getUpcomingMovie(@Query("api_key") String api_key, @Query("language") String lang);
 
 
+    @GET("movie/{id}")
+    Call<ExtendedMovie> getMovieByID(@Path("id") int id, @Query("api_key") String api_key);
+
+    @GET("movie/{id}/credits")
+    Call<ResponseFromJSONCast> getCastByMovieID(@Path("id") int id, @Query("api_key") String api_key);
+
     //what datatype of video?
     @GET("movie/{id}/videos")
-    Call<ResponseFromJSONVideos> getVideoByMovieID(@Path("id") int id);
+    Call<ResponseFromJSONVideos> getVideoByMovieID(@Path("id") int id, @Query("api_key") String api_key);
 
     //what datatype of video?
     @GET("movie/{id}/reviews")
-    Call<ResponseFromJSONReviews> getReviewsByMovieID(@Path("id") int id);
+    Call<ResponseFromJSONReviews> getReviewsByMovieID(@Path("id") int id, @Query("api_key") String api_key);
 
 
 

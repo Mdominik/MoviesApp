@@ -80,16 +80,16 @@ public class MovieBackgroundService extends IntentService{
         switch(sortOption) {
 
             case 1:
-                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
                 break;
             case 2:
-                callPopularityTopRated = client.getTopRatedMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
+                callPopularityTopRated = client.getTopRatedMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
                 break;
             case 3:
-                callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
+                callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
                 break;
             default:
-                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("German"));
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
         }
         try{
             if(sortOption == 1 || sortOption == 2) {

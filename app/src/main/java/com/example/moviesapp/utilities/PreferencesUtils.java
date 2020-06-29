@@ -15,7 +15,6 @@ public class PreferencesUtils {
     public static HashMap<String,String> languages;
 
     public static String getLanguageCode(String languageName) {
-        Log.i("languages array", ""+languages.size());
         return languages.get(languageName) + "-" + languages.get(languageName).toUpperCase(); // example pl-PL
     }
     

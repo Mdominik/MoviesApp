@@ -13,25 +13,20 @@ public class CSVReader {
     private static HashMap<String, String> languages = new HashMap<>();
     private static BufferedReader br;
     public static HashMap<String,String> getLanguagesForJSON(InputStream inputStream) {
-        Log.i("sss","qqq");
         try {
             String sCurrentLine;
-            Log.i("sss","qqq");
             br = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
             int count = 0;
-            Log.i("sss","ss");
             while ((sCurrentLine = br.readLine ()) != null) {
                 if(count > 1) {
                     sCurrentLine = sCurrentLine.substring(1, sCurrentLine.length()-1);
                     String[] s = sCurrentLine.split("\",\"");
                     languages.put(s[1], s[0]);
-                    Log.i("sss",sCurrentLine);
 
                 }
                 count++;
             }
 
-            Log.i("After whiel", ""+(languages.get("Polish")));
             return languages;
 
         } catch (IOException e) {

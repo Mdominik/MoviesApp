@@ -27,6 +27,9 @@
         <service android:name=".background.MovieBackgroundService">
 
         </service>
+        <service android:name=".background.OtherDataService">
+
+        </service>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
