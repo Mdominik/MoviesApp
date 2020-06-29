@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.moviesapp.api.model.Cast;
+import com.example.moviesapp.api.model.Crew;
 import com.example.moviesapp.api.model.ExtendedMovie;
 import com.example.moviesapp.api.model.Movie;
 import com.example.moviesapp.api.model.POJO.ResponseFromJSONCast;
@@ -22,6 +23,7 @@ import com.example.moviesapp.api.model.Review;
 import com.example.moviesapp.api.model.Video;
 import com.example.moviesapp.api.service.MovieClient;
 import com.example.moviesapp.utilities.CSVReader;
+import com.example.moviesapp.utilities.Config;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.example.moviesapp.utilities.PreferencesUtils;
 
@@ -97,6 +99,7 @@ public class OtherDataService extends IntentService {
         ArrayList<Review> reviews = null;
         ArrayList<Video> videos = null;
         ArrayList<Cast> cast = null;
+        ArrayList<Crew> crew = null;
 
         try {
             AssetManager am = getAssets();
@@ -106,10 +109,10 @@ public class OtherDataService extends IntentService {
         } catch(IOException e) {Log.i("NIE DZIALA", "REE");}
 
         // REQUESTS
-
+        String lan = Config.getLanguage();
         callReviews = client.getReviewsByMovieID(movie_id, NetworkUtils.URL_API_KEY);
         callCast = client.getCastByMovieID(movie_id, NetworkUtils.URL_API_KEY);
-        callExtendedMovie = client.getMovieByID(movie_id, NetworkUtils.URL_API_KEY);
+        callExtendedMovie = client.getMovieByID(movie_id, NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan));
         callVideos = client.getVideoByMovieID(movie_id, NetworkUtils.URL_API_KEY);
 
         try{
@@ -123,7 +126,16 @@ public class OtherDataService extends IntentService {
 
             resultCast = callCast.execute();
             cast = (ArrayList<Cast>) resultCast.body().getCast();
-            Log.i("OTherDataService", "cast"+cast.size());
+            String directorsName = null;
+            for(Crew c : resultCast.body().getCrew()) {
+                if(c.getJob().equals("Director")) {
+                    directorsName = c.getName();
+                    break;
+                }
+                else {
+                    directorsName = "unknown";
+                }
+            }
 
             resultVideos = callVideos.execute();
             videos = (ArrayList<Video>) resultVideos.body().getVideos();
@@ -135,6 +147,8 @@ public class OtherDataService extends IntentService {
             resultIntent.putExtra("extendedMovie", extendedMovie);
             resultIntent.putParcelableArrayListExtra("cast", cast);
             resultIntent.putParcelableArrayListExtra("videos", videos);
+            resultIntent.putParcelableArrayListExtra("crew", crew);
+            resultIntent.putExtra("director", directorsName);
 
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
         }catch(IOException ioe) {

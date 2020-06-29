@@ -10,11 +10,19 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.moviesapp.api.model.Cast;
+import com.example.moviesapp.api.model.ExtendedMovie;
 import com.example.moviesapp.api.model.Movie;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONCast;
 import com.example.moviesapp.api.model.POJO.ResponseFromJSONPopularityTopRated;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONReviews;
 import com.example.moviesapp.api.model.POJO.ResponseFromJSONUpcoming;
+import com.example.moviesapp.api.model.POJO.ResponseFromJSONVideos;
+import com.example.moviesapp.api.model.Review;
+import com.example.moviesapp.api.model.Video;
 import com.example.moviesapp.api.service.MovieClient;
 import com.example.moviesapp.utilities.CSVReader;
+import com.example.moviesapp.utilities.Config;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.example.moviesapp.utilities.PreferencesUtils;
 
@@ -71,26 +79,31 @@ public class MovieBackgroundService extends IntentService{
         Response<ResponseFromJSONPopularityTopRated> resultPopularityTopRated=null;
         Response<ResponseFromJSONUpcoming> resultUpcoming=null;
         ArrayList<Movie> movies = null;
+
+
         try {
             AssetManager am = getAssets();
             InputStream inputStream = am.open("languages.csv");
             PreferencesUtils.setLanguages(CSVReader.getLanguagesForJSON(inputStream));
 
         } catch(IOException e) {Log.i("NIE DZIALA", "REE");}
+
+        String lan = Config.getLanguage();;
         switch(sortOption) {
 
             case 1:
-                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan));
                 break;
             case 2:
-                callPopularityTopRated = client.getTopRatedMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
+                callPopularityTopRated = client.getTopRatedMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan), 500);
                 break;
             case 3:
-                callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
+                callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan), 500);
                 break;
             default:
-                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode("English"));
+                callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan));
         }
+
         try{
             if(sortOption == 1 || sortOption == 2) {
                 resultPopularityTopRated = callPopularityTopRated.execute();
@@ -110,6 +123,8 @@ public class MovieBackgroundService extends IntentService{
         }catch(IOException ioe) {
             Log.i("Retrofit","Failure!");
         }
+
+
 
     }
 

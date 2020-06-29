@@ -13,6 +13,9 @@
     <string name="length_min">length</string>
     <string name="director">director</string>
     <string name="rating_name">rating</string>
-    <string name="country">country</string>
+    <string name="rating">rating</string>
     <string name="action_settings">Preferences</string>
+    <string name="budget">budget</string>
+
+    <string name="minutes">min</string>
 </resources>

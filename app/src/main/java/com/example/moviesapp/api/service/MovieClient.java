@@ -23,14 +23,14 @@ public interface MovieClient {
     Call<ResponseFromJSONPopularityTopRated> getPopularMovie(@Query("api_key") String api_key, @Query("language") String lang);
 
     @GET("movie/top_rated")
-    Call<ResponseFromJSONPopularityTopRated> getTopRatedMovie(@Query("api_key") String api_key, @Query("language") String lang);
+    Call<ResponseFromJSONPopularityTopRated> getTopRatedMovie(@Query("api_key") String api_key, @Query("language") String lang, @Query("vote_count.gte") Integer vote_count);
 
     @GET("movie/upcoming")
-    Call<ResponseFromJSONUpcoming> getUpcomingMovie(@Query("api_key") String api_key, @Query("language") String lang);
+    Call<ResponseFromJSONUpcoming> getUpcomingMovie(@Query("api_key") String api_key, @Query("language") String lang, @Query("vote_count.gte") Integer vote_count);
 
 
     @GET("movie/{id}")
-    Call<ExtendedMovie> getMovieByID(@Path("id") int id, @Query("api_key") String api_key);
+    Call<ExtendedMovie> getMovieByID(@Path("id") int id, @Query("api_key") String api_key, @Query("language") String lang);
 
     @GET("movie/{id}/credits")
     Call<ResponseFromJSONCast> getCastByMovieID(@Path("id") int id, @Query("api_key") String api_key);
