@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -77,7 +78,10 @@ public class MovieActivity extends AppCompatActivity {
             String year = extendedMovie.getReleaseDate().substring(0, 4);
             mYearDisplay.setText(year);
 
-            String overview = extendedMovie.getOverview().length() == 0 ? "No description in " + Config.getLanguage() + ", sorry!" : extendedMovie.getOverview();
+            SharedPreferences sharedPreferences = getSharedPreferences("language", MODE_PRIVATE);
+            String lan_name = sharedPreferences.getString("language_name", "English");
+
+            String overview = extendedMovie.getOverview().length() == 0 ? "No description in " + lan_name + ", sorry!" : extendedMovie.getOverview();
             mOverviewDisplay.setText(overview);
 
             Double rating = extendedMovie.getVoteAverage();

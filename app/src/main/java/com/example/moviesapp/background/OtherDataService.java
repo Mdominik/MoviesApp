@@ -2,12 +2,15 @@ package com.example.moviesapp.background;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.moviesapp.api.model.Cast;
@@ -66,6 +69,7 @@ public class OtherDataService extends IntentService {
 //        return Service.START_STICKY;
 //    }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         movie_id = intent.getIntExtra("movie_id", 0);
@@ -109,7 +113,9 @@ public class OtherDataService extends IntentService {
         } catch(IOException e) {Log.i("NIE DZIALA", "REE");}
 
         // REQUESTS
-        String lan = Config.getLanguage();
+        SharedPreferences sharedPreferences = getSharedPreferences("language", MODE_PRIVATE);
+        String lan = sharedPreferences.getString("language_name", "English");
+
         callReviews = client.getReviewsByMovieID(movie_id, NetworkUtils.URL_API_KEY);
         callCast = client.getCastByMovieID(movie_id, NetworkUtils.URL_API_KEY);
         callExtendedMovie = client.getMovieByID(movie_id, NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan));

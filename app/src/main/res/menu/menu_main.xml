@@ -4,38 +4,29 @@
     tools:context="com.example.myapplication.MainActivity"
     android:title="sort">
 
-    <group android:id="@+id/g_sorting">
-        <item
-            android:id="@+id/sortByPopularity"
-            android:orderInCategory="100"
-            android:title="show popular"
-            app:showAsAction="never" />
-        <item
-            android:id="@+id/sortByTopRated"
-            android:orderInCategory="100"
-            android:title="show top rated"
-            app:showAsAction="never" />
-        <item
-            android:id="@+id/sortByUpcoming"
-            android:orderInCategory="100"
-            android:title="show upcoming"
-            app:showAsAction="never" />
-        <item
-            android:id="@+id/sortByFavourites"
-            android:orderInCategory="100"
-            android:title="show my favourites"
-            app:showAsAction="never" />
-    </group>
-    <group android:id="@+id/g_preferences">
-        <item
-            android:id="@+id/nightMode"
-            android:orderInCategory="100"
-            android:title="Day/Night mode"
-            app:showAsAction="never" />
-    </group>
+    <item
+        android:id="@+id/sortByPopularity"
+        android:orderInCategory="100"
+        android:title="show popular"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sortByTopRated"
+        android:orderInCategory="100"
+        android:title="show top rated"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sortByUpcoming"
+        android:orderInCategory="100"
+        android:title="show upcoming"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sortByFavourites"
+        android:orderInCategory="100"
+        android:title="show my favourites"
+        app:showAsAction="never" />
     <item
         android:id="@+id/menu_pref"
         android:orderInCategory="100"
-        android:title="preferences"
+        android:title="languages"
         app:showAsAction="always" />
 </menu>

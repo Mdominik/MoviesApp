@@ -1,6 +1,7 @@
 package com.example.moviesapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -12,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,6 +172,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 Log.i("Selecting sorting", "Sorted by upcoming selected");
                 sendNetworkRequest(currentSorting);
                 return true;
+            case R.id.menu_pref:
+                Intent intent = new Intent(this, LanguagePrefActivity.class);
+                startActivity(intent);
+                return true;
+
 
 
     /*case R.id.nightMode:

@@ -2,12 +2,15 @@ package com.example.moviesapp.background;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.moviesapp.api.model.Cast;
@@ -63,10 +66,10 @@ public class MovieBackgroundService extends IntentService{
 //        return Service.START_STICKY;
 //    }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         sortOption = intent.getIntExtra("sortOption", 1);
-        Log.i("Sort option", ""+sortOption);
         //create retrofit instance
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(NetworkUtils.URL_BASE)
@@ -88,7 +91,9 @@ public class MovieBackgroundService extends IntentService{
 
         } catch(IOException e) {Log.i("NIE DZIALA", "REE");}
 
-        String lan = Config.getLanguage();;
+
+        SharedPreferences sharedPreferences = getSharedPreferences("language", MODE_PRIVATE);
+        String lan = sharedPreferences.getString("language_name", "English");
         switch(sortOption) {
 
             case 1:

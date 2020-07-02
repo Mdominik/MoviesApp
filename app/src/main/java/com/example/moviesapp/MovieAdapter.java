@@ -7,6 +7,7 @@ import com.example.moviesapp.background.OnClickPosterListener;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +99,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         public MovieAdapterViewHolder(View itemView, OnClickPosterListener listener) {
             super(itemView);
             this.listener = listener;
+
+            Log.i("view322123123", ""+itemView);
             mMovieImageView = (ImageView) itemView.findViewById(R.id.movieItem);
             itemView.setOnClickListener(this);
         }
