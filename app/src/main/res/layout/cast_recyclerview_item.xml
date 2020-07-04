@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/cv_cast"
+    android:layout_margin="10dp">
+
+    <LinearLayout
+        android:id="@+id/ll_cast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/iv_actorImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="10dp" />
+
+        <TextView
+            android:id="@+id/tv_actorName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+
+            android:padding="10dp"
+            android:textColor="@color/colorAccent" />
+
+        <TextView
+            android:id="@+id/tv_characterName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_light"
+
+            android:padding="10dp"
+            android:textColor="@color/colorAccent" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

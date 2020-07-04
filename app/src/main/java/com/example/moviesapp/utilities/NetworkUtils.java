@@ -24,6 +24,7 @@ public class NetworkUtils {
     public final static String URL_VOTECOUNT_GREATER_THAN = "vote_count.gte";
     public final static String URL_VOTECOUNT_GREATER_THAN_VALUE = "200000";
     public final static String URL_BASE_FOR_POSTER = "https://image.tmdb.org/t/p/";
+    public final static String URL_SIZE_CAST_THUMBNAIL = "w342";
     public final static String URL_SIZE_POSTER = "w185";
     public final static String URL_SIZE_BACKGROUND = "w342";
     public final static String URL_BASE = "https://api.themoviedb.org/3/";

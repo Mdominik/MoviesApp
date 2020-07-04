@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
 
         //current sorting criteria
-        int sort = sharedPreferences.getInt("int_sorting", 0);
+        int sort = sharedPreferences.getInt("int_sorting", 1);
 
         //first request
         sendNetworkRequest(sort);
