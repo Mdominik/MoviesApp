@@ -12,6 +12,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:fontFamily="@font/roboto_light"
+            android:gravity="center_horizontal"
+            android:text="Trailers"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@+id/rv_cast" />
+
         <ProgressBar
             android:id="@+id/pb_loading"
             style="?android:attr/progressBarStyle"
@@ -289,7 +301,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_cast"
-            android:layout_width="413dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:orientation="horizontal"
@@ -301,14 +313,13 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="24dp"
             android:fontFamily="@font/roboto_light"
             android:gravity="center_horizontal"
             android:text="Cast"
             android:textAlignment="center"
             android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider" />
 
@@ -331,11 +342,13 @@
         <ListView
             android:id="@+id/lv_videos"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_marginBottom="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_original_title"
+            android:layout_height="88dp"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="30dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

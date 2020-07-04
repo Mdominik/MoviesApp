@@ -1,6 +1,5 @@
 package com.example.moviesapp;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,14 +40,11 @@ import com.example.moviesapp.api.model.Movie;
 import com.example.moviesapp.api.model.Review;
 import com.example.moviesapp.api.model.Video;
 import com.example.moviesapp.background.OnClickCastListener;
-import com.example.moviesapp.background.OnClickLangListener;
-import com.example.moviesapp.background.OnClickPosterListener;
 import com.example.moviesapp.background.OtherDataService;
 import com.example.moviesapp.utilities.NetworkUtils;
-import com.example.moviesapp.utilities.Storage;
+import com.example.moviesapp.utilities.UtilitySolveScrolling;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,17 +135,25 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
             videoAdapter = new VideoAdapter(videos);
             mListVideos.setAdapter(videoAdapter);
 
+            //copy pasted from internet to make listview scrolling inside scrollview work
+            UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListVideos);
+
+
             Log.i("VIDEO COUNT ADAPTER", ""+videoAdapter.getCount());
             mListVideos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Log.i("YT listener", "yes");
                     Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videos.get(i).getKey()));
                     Intent webIntent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse("http://www.youtube.com/watch?v=" + videos.get(i).getKey()));
                     try {
                         MovieActivity.this.startActivity(appIntent);
+                        Log.i("YT video try", "yes");
                     } catch (ActivityNotFoundException ex) {
+
                         MovieActivity.this.startActivity(webIntent);
+                        Log.i("YT video webintent", "yes");
                     }
                 }
             });
