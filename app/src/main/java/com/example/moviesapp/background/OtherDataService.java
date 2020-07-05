@@ -149,7 +149,7 @@ public class OtherDataService extends IntentService {
 
             //send it to MovieActivity:
             Intent resultIntent = new Intent("OtherDataService");
-            resultIntent.putParcelableArrayListExtra("review", reviews);
+            resultIntent.putParcelableArrayListExtra("reviews", reviews);
             resultIntent.putExtra("extendedMovie", extendedMovie);
             resultIntent.putParcelableArrayListExtra("cast", cast);
             resultIntent.putParcelableArrayListExtra("videos", videos);

@@ -89,7 +89,7 @@ public class MovieBackgroundService extends IntentService{
             InputStream inputStream = am.open("languages.csv");
             PreferencesUtils.setLanguages(CSVReader.getLanguagesForJSON(inputStream));
 
-        } catch(IOException e) {Log.i("NIE DZIALA", "REE");}
+        } catch(IOException e) {Log.i("Languages not loaded", ".");}
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("language", MODE_PRIVATE);

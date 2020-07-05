@@ -12,17 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="56dp"
-            android:fontFamily="@font/roboto_light"
-            android:gravity="center_horizontal"
-            android:text="Trailers"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@+id/rv_cast" />
+
 
         <ProgressBar
             android:id="@+id/pb_loading"
@@ -338,6 +328,17 @@
             android:layout_marginTop="28dp"
             android:background="?android:attr/listDivider"
             app:layout_constraintTop_toBottomOf="@+id/rv_cast" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:fontFamily="@font/roboto_light"
+            android:gravity="center_horizontal"
+            android:text="Videos"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@+id/rv_cast" />
 
         <ListView
             android:id="@+id/lv_videos"
@@ -347,9 +348,39 @@
             android:layout_marginBottom="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:layout_constraintVertical_bias="0.038" />
 
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="28dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@+id/lv_videos" />
+        <TextView
+            android:id="@+id/textViewReviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:fontFamily="@font/roboto_light"
+            android:gravity="center_horizontal"
+            android:text="Reviews"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@+id/lv_videos" />
+        <ListView
+            android:id="@+id/lv_reviews"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="30dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewReviews" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

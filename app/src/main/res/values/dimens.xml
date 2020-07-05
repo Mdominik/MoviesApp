@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+
+    <dimen name="marginPaddingLittle">8dp</dimen>
+    <dimen name="marginPaddingMedium">16dp</dimen>
+    <dimen name="marginPaddingBig">24dp</dimen>
+    <dimen name="marginPaddingLarge">36dp</dimen>
+    <dimen name="fontLittle">10dp</dimen>
+    <dimen name="fontMedium">16dp</dimen>
+    <dimen name="fontLarge">24dp</dimen>
+</resources>

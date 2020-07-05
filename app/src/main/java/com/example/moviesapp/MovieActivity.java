@@ -42,6 +42,7 @@ import com.example.moviesapp.api.model.Video;
 import com.example.moviesapp.background.OnClickCastListener;
 import com.example.moviesapp.background.OtherDataService;
 import com.example.moviesapp.utilities.NetworkUtils;
+import com.example.moviesapp.utilities.PreferencesUtils;
 import com.example.moviesapp.utilities.UtilitySolveScrolling;
 import com.squareup.picasso.Picasso;
 
@@ -73,8 +74,13 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
     private CardView mCast;
     private List<Cast> mCastList;
     private ListView mListVideos;
+
+    private ListView mListReviews;
+
     OnClickCastListener onClickCastListener;
     private VideoAdapter videoAdapter;
+    private ReviewAdapter reviewAdapter;
+
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -87,6 +93,7 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
             videos = intent.getParcelableArrayListExtra("videos");
             directorsName = intent.getStringExtra("director");
 
+            Log.i("List reviews created?", ""+(reviews == null));
             String posterURL = NetworkUtils.getURLBaseAndSizeForPoster() + extendedMovie.getPosterPath();
             Picasso.get().load(posterURL).into(mPoster);
 
@@ -158,6 +165,18 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
                 }
             });
 
+            //show reviews
+            mListReviews = findViewById(R.id.lv_reviews);
+            Log.i("List reviews created?", ""+(reviews.size()));
+            reviewAdapter = new ReviewAdapter(reviews);
+            mListReviews.setAdapter(reviewAdapter);
+
+            //copy pasted from internet to make listview scrolling inside scrollview work
+            UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListReviews);
+
+
+            Log.i("Review COUNT ADAPTER", ""+reviewAdapter.getCount());
+
 
             showMovieDetails();
         }
@@ -182,6 +201,41 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
             TextView mVideoTitle = row.findViewById(R.id.tv_videoTitle);
             mVideoTitle.setText(movieVideos.get(position).getName());
             Log.i("Position"+position, movieVideos.get(position).getName());
+            return row;
+        }
+    }
+
+    class ReviewAdapter extends ArrayAdapter<Review> {
+
+        Context context;
+        ArrayList<Review> mReviews;
+
+        public ReviewAdapter(ArrayList<Review> reviews) {
+            super(MovieActivity.this, R.layout.row_review, reviews);
+            this.mReviews = reviews;
+            Log.i("Log from ReviewAdapter", ""+reviews.size());
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            LayoutInflater layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View row = layoutInflater.inflate(R.layout.row_review, parent, false);
+
+            //content
+            TextView mReviewContent = row.findViewById(R.id.tv_reviewContent);
+            mReviewContent.setText(mReviews.get(position).getContent());
+            Log.i("Position"+position, mReviews.get(position).getContent());
+
+            //author
+            TextView mReviewAuthor = row.findViewById(R.id.tv_reviewAuthor);
+            mReviewAuthor.setText(mReviews.get(position).getAuthor());
+            Log.i("Position"+position, mReviews.get(position).getAuthor());
+
+            //reviewID
+            TextView mReviewID = row.findViewById(R.id.tv_reviewID);
+            mReviewID.setText("Review #" + (position+1));
+            Log.i("Postition"+position, "Review #" + (position+1));
             return row;
         }
     }
@@ -235,6 +289,19 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
 
         return;
     }
+
+//    @Override
+//    public void onSaveInstanceState(Bundle savedInstanceState) {
+//        // Save the current movie
+//        savedInstanceState.putParcelable(PreferencesUtils.STATE_EXTENDED_MOVIES, extendedMovie);
+//        savedInstanceState.putParcelableArrayList(PreferencesUtils.STATE_REVIEWS, reviews);
+//        savedInstanceState.putParcelableArrayList(PreferencesUtils.STATE_CAST, cast);
+//        savedInstanceState.putParcelableArrayList(PreferencesUtils.STATE_VIDEOS, videos);
+//        savedInstanceState.putString(PreferencesUtils.STATE_DIRECTOR, directorsName);
+//
+//        // Always call the superclass so it can save the view hierarchy state
+//        super.onSaveInstanceState(savedInstanceState);
+//    }
 
     public void showProgressBar() {
         ConstraintLayout constraintLayout = findViewById(R.id.cl_movieDetails);
