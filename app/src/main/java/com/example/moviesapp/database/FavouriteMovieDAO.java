@@ -7,6 +7,9 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.example.moviesapp.api.model.Movie;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Dao
@@ -24,7 +27,9 @@ public interface FavouriteMovieDAO {
     @Query("DELETE FROM favourite_movies")
     void deleteAllFavourites();
 
-    @Query("SELECT * FROM favourite_movies ORDER BY addedToFavDate DESC")
-    LiveData<List<FavouriteMovieForDB>> getFavouritesByDate();
+    @Query("SELECT * FROM favourite_movies")
+    LiveData<List<FavouriteMovieForDB>> getFavourites();
 
+    @Query("DELETE FROM favourite_movies WHERE idFromAPI=:id")
+    void deleteMovieByID(int id);
 }

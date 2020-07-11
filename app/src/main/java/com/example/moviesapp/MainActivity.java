@@ -3,6 +3,8 @@ package com.example.moviesapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,10 +32,13 @@ import com.example.moviesapp.api.model.Movie;
 import com.example.moviesapp.background.MovieBackgroundService;
 import com.example.moviesapp.background.OnClickPosterListener;
 import com.example.moviesapp.background.OtherDataService;
+import com.example.moviesapp.database.FavMovieViewModel;
+import com.example.moviesapp.database.FavouriteMovieForDB;
 import com.example.moviesapp.utilities.CSVReader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.moviesapp.MovieAdapter.MovieAdapterOnClickHandler;
 import com.example.moviesapp.utilities.PreferencesUtils;
@@ -52,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     private SharedPreferences sharedPreferences;
     ToggleButton fav;
     OnClickPosterListener onClickPosterListener;
-
+    private FavMovieViewModel favMovieViewModel;
+    private List<FavouriteMovieForDB> mFavouriteMovies;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -63,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
             }
             mMoviesList = intent.getParcelableArrayListExtra("movies");
             mMovieAdapter.setMoviesData(mMoviesList);
+
             showPosters();
         }
     };
@@ -109,6 +116,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mMoviesRecyclerView.setHasFixedSize(true);
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
         //RECYCLER VIEW PART END
+
+
+        favMovieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(FavMovieViewModel.class);
+        favMovieViewModel.getAllFavMovies().observe(this, new Observer<List<FavouriteMovieForDB>>() {
+            @Override
+            public void onChanged(List<FavouriteMovieForDB> favouriteMoviesForDB) {
+                mFavouriteMovies = favouriteMoviesForDB;
+            }
+        });
+        Log.i("favMovieViewModel", favMovieViewModel+"");
+
 
         //retrieving data from API
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
@@ -172,6 +190,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 Log.i("Selecting sorting", "Sorted by upcoming selected");
                 sendNetworkRequest(currentSorting);
                 return true;
+            case R.id.sortByFavourites:
+                mMovieAdapter.setMoviesData(mFavouriteMovies);
+                return true;
             case R.id.menu_pref:
                 Intent intent = new Intent(this, LanguagePrefActivity.class);
                 startActivity(intent);
@@ -209,10 +230,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         //create new Intent (detailactivity)
         Context context = this;
         Class destinationClass = MovieActivity.class;
+        Movie movie = null;
+        FavouriteMovieForDB fav_movie = null;
         Intent intentToStartDetailActivity = new Intent(context, destinationClass);
 
         //send movie data to the new Intent. Also possible to send the object with Parcelable?
-        Movie movie = mMovieAdapter.getmMoviesList().get(index);
+        if(mMovieAdapter.getmMoviesList().get(index) instanceof Movie) {
+            movie = (Movie) mMovieAdapter.getmMoviesList().get(index);
+        }
+        else if(mMovieAdapter.getmMoviesList().get(index) instanceof FavouriteMovieForDB) {
+            fav_movie = (FavouriteMovieForDB) mMovieAdapter.getmMoviesList().get(index);
+            movie = new Movie(fav_movie.getPosterPath(), fav_movie.getIdFromAPi());
+        }
+
 
         //Movie object is parcelable
         intentToStartDetailActivity.putExtra("movie", movie);
@@ -243,8 +273,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         showProgress();
         Intent intent_movie = new Intent(MainActivity.this, MovieBackgroundService.class);
         intent_movie.putExtra("sortOption", sorting_criteria);
-        startService(intent_movie);
 
+        startService(intent_movie);
         Log.i("In sendNetworkRequest", "executing");
     }
 

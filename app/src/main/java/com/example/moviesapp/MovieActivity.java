@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,10 +42,14 @@ import com.example.moviesapp.api.model.Review;
 import com.example.moviesapp.api.model.Video;
 import com.example.moviesapp.background.OnClickCastListener;
 import com.example.moviesapp.background.OtherDataService;
+import com.example.moviesapp.database.FavMovieViewModel;
+import com.example.moviesapp.database.FavouriteMovieForDB;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.example.moviesapp.utilities.PreferencesUtils;
 import com.example.moviesapp.utilities.UtilitySolveScrolling;
 import com.squareup.picasso.Picasso;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,14 +74,14 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
     private ArrayList<Video> videos;
     private String directorsName;
     private ConstraintLayout mMovieDetail;
-
+    private ToggleButton buttonFavorite;
     private RecyclerView mCastRecyclerView;
     private CardView mCast;
     private List<Cast> mCastList;
     private ListView mListVideos;
 
     private ListView mListReviews;
-
+    private FavMovieViewModel favMovieViewModel;
     OnClickCastListener onClickCastListener;
     private VideoAdapter videoAdapter;
     private ReviewAdapter reviewAdapter;
@@ -155,11 +160,11 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
                     Intent webIntent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse("http://www.youtube.com/watch?v=" + videos.get(i).getKey()));
                     try {
-                        MovieActivity.this.startActivity(appIntent);
+                        startActivity(appIntent);
                         Log.i("YT video try", "yes");
                     } catch (ActivityNotFoundException ex) {
 
-                        MovieActivity.this.startActivity(webIntent);
+                        startActivity(webIntent);
                         Log.i("YT video webintent", "yes");
                     }
                 }
@@ -176,6 +181,7 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
 
 
             Log.i("Review COUNT ADAPTER", ""+reviewAdapter.getCount());
+
 
 
             showMovieDetails();
@@ -256,18 +262,26 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
         mDirector = findViewById(R.id.tv_director);
         mBudget = findViewById(R.id.tv_budget);
         Movie movie = null;
-
+        favMovieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(FavMovieViewModel.class);
+        Log.i("favMovieViewModel", favMovieViewModel+"");
+        buttonFavorite = findViewById(R.id.button_favorite);
         //fav button
         final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
         scaleAnimation.setDuration(500);
         BounceInterpolator bounceInterpolator = new BounceInterpolator();
         scaleAnimation.setInterpolator(bounceInterpolator);
-        ToggleButton buttonFavorite = findViewById(R.id.button_favorite);
         buttonFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 //animation
                 compoundButton.startAnimation(scaleAnimation);
+                if(isChecked) {
+                    favMovieViewModel.insert(new FavouriteMovieForDB(extendedMovie.getId(), extendedMovie.getPosterPath()));
+                    Log.i("DB", extendedMovie.getId() + " added");
+                } else {
+                    favMovieViewModel.deleteMovieByID(extendedMovie.getId());
+                    Log.i("DB", extendedMovie.getId() + " deleted");
+                }
 
             }
         });

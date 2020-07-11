@@ -43,17 +43,7 @@ public class MovieBackgroundService extends IntentService{
     //1=sort by popular, 2=sort by top rated, 3=sort by fav
     private int sortOption;
 
-    public final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel source) {
-            return new Movie(source);
-        }
 
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
 
     public MovieBackgroundService() {
         super("Movie Background Service");
@@ -123,7 +113,7 @@ public class MovieBackgroundService extends IntentService{
 
             //send it to MainActivity:
             Intent resultIntent = new Intent("MovieBackgroundService");
-            resultIntent.putParcelableArrayListExtra("movies", movies);
+            resultIntent.putParcelableArrayListExtra("movies", (ArrayList<Movie>)movies);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
         }catch(IOException ioe) {
             Log.i("Retrofit","Failure!");
