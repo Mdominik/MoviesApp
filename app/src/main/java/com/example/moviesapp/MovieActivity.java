@@ -11,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -171,7 +173,8 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
 
 
             //check if the movie exists in favourite database
-            buttonFavorite.setChecked(favMovieViewModel.getByID(extendedMovie.getId()).intValue() == extendedMovie.getId().intValue());
+            buttonFavorite.setChecked(favMovieViewModel.getByID(
+                    extendedMovie.getId()).intValue() == extendedMovie.getId());
 
             //copy pasted from internet to make listview scrolling inside scrollview work
             UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListReviews);
@@ -187,6 +190,25 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_movie, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.share) {
+            Intent send = new Intent();
+            send.setAction(Intent.ACTION_SEND);
+            send.setType("text/plain");
+            send.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v="+videos.get(0).getKey());
+            startActivity(Intent.createChooser(send, "send the trailer:"));
+            return true;
+        }
+        return false;
+    }
 
     class VideoAdapter extends ArrayAdapter<Video> {
 

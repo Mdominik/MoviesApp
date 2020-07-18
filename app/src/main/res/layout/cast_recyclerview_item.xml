@@ -4,14 +4,18 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/cv_cast"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    android:elevation="10sp"
+
+     >
 
     <LinearLayout
         android:id="@+id/ll_cast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="@drawable/background">
 
         <ImageView
             android:id="@+id/iv_actorImage"
@@ -27,7 +31,7 @@
             android:fontFamily="@font/roboto_light"
 
             android:padding="10dp"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/tv_characterName"
@@ -36,7 +40,7 @@
             android:fontFamily="@font/roboto_light"
 
             android:padding="10dp"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/white" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
