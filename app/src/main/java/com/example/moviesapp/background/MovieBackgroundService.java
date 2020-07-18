@@ -95,6 +95,8 @@ public class MovieBackgroundService extends IntentService{
             case 3:
                 callUpcoming = client.getUpcomingMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan), 500);
                 break;
+            case 4:
+                break;
             default:
                 callPopularityTopRated = client.getPopularMovie(NetworkUtils.URL_API_KEY, PreferencesUtils.getLanguageCode(lan));
         }
@@ -113,7 +115,8 @@ public class MovieBackgroundService extends IntentService{
 
             //send it to MainActivity:
             Intent resultIntent = new Intent("MovieBackgroundService");
-            resultIntent.putParcelableArrayListExtra("movies", (ArrayList<Movie>)movies);
+            resultIntent.putParcelableArrayListExtra("movies", movies);
+            resultIntent.putExtra("sorting", sortOption);
             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(resultIntent);
         }catch(IOException ioe) {
             Log.i("Retrofit","Failure!");

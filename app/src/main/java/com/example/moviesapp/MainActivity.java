@@ -63,11 +63,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if(intent.getIntExtra("sorting", 1) == 4) {
+                mMovieAdapter.setMoviesData(mFavouriteMovies);
+                showPosters();
+                return;
+            }
             if(mMoviesList == null) {
                 showError();
                 return;
             }
+
+
             mMoviesList = intent.getParcelableArrayListExtra("movies");
+
             mMovieAdapter.setMoviesData(mMoviesList);
 
             showPosters();
@@ -192,6 +200,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 return true;
             case R.id.sortByFavourites:
                 mMovieAdapter.setMoviesData(mFavouriteMovies);
+                editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
+                editor.putInt("int_sorting", 4);
+                currentSorting = 4;
+                editor.apply();
+                sendNetworkRequest(currentSorting);
                 return true;
             case R.id.menu_pref:
                 Intent intent = new Intent(this, LanguagePrefActivity.class);
