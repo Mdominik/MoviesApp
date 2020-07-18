@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ import com.example.moviesapp.api.model.Review;
 import com.example.moviesapp.api.model.Video;
 import com.example.moviesapp.background.OnClickCastListener;
 import com.example.moviesapp.background.OtherDataService;
+import com.example.moviesapp.database.AppExecutors;
 import com.example.moviesapp.database.FavMovieViewModel;
 import com.example.moviesapp.database.FavouriteMovieForDB;
 import com.example.moviesapp.utilities.NetworkUtils;
@@ -54,7 +56,7 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieActivity extends AppCompatActivity   implements OnClickCastListener, CastAdapter.CastAdapterOnClickHandler{
+public class MovieActivity extends AppCompatActivity   implements CastAdapter.CastAdapterOnClickHandler{
     private TextView mTitleDisplay;
     private TextView mYearDisplay;
     private RatingBar mRatingDisplay;
@@ -90,7 +92,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            Log.i("Movie Activity", "received data from API");
 
             extendedMovie = intent.getParcelableExtra("extendedMovie");
             cast = intent.getParcelableArrayListExtra("cast");
@@ -98,7 +99,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
             videos = intent.getParcelableArrayListExtra("videos");
             directorsName = intent.getStringExtra("director");
 
-            Log.i("List reviews created?", ""+(reviews == null));
             String posterURL = NetworkUtils.getURLBaseAndSizeForPoster() + extendedMovie.getPosterPath();
             Picasso.get().load(posterURL).into(mPoster);
 
@@ -127,7 +127,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
 
 
             //Set Cast rv, adapter
-            Log.i("CastAdapter got data", "Cast amount: " + cast.size());
             mCastAdapter = new CastAdapter(MovieActivity.this);
             mCastAdapter.setCasts(cast);
 
@@ -143,7 +142,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
 
             //show videos
             mListVideos = findViewById(R.id.lv_videos);
-            Log.i("List Videos created?", ""+(videos.size()));
             videoAdapter = new VideoAdapter(videos);
             mListVideos.setAdapter(videoAdapter);
 
@@ -151,42 +149,41 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
             UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListVideos);
 
 
-            Log.i("VIDEO COUNT ADAPTER", ""+videoAdapter.getCount());
             mListVideos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Log.i("YT listener", "yes");
                     Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + videos.get(i).getKey()));
                     Intent webIntent = new Intent(Intent.ACTION_VIEW,
                             Uri.parse("http://www.youtube.com/watch?v=" + videos.get(i).getKey()));
                     try {
                         startActivity(appIntent);
-                        Log.i("YT video try", "yes");
                     } catch (ActivityNotFoundException ex) {
 
                         startActivity(webIntent);
-                        Log.i("YT video webintent", "yes");
                     }
                 }
             });
 
             //show reviews
             mListReviews = findViewById(R.id.lv_reviews);
-            Log.i("List reviews created?", ""+(reviews.size()));
             reviewAdapter = new ReviewAdapter(reviews);
             mListReviews.setAdapter(reviewAdapter);
 
+            buttonFavorite.setChecked(favMovieViewModel.getByID(extendedMovie.getId()).intValue() == extendedMovie.getId().intValue());
+
             //copy pasted from internet to make listview scrolling inside scrollview work
             UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListReviews);
-
-
-            Log.i("Review COUNT ADAPTER", ""+reviewAdapter.getCount());
-
-
-
+            Log.i("MovieAcity extedMovieID", extendedMovie.getId() + ", " + favMovieViewModel.getByID(extendedMovie.getId()));
+            //buttonFavorite.setChecked(favMovieViewModel.getByID(extendedMovie.getId()) == extendedMovie.getId());
             showMovieDetails();
         }
     };
+
+    @Override
+    public void onClick(int index) {
+
+    }
+
 
     class VideoAdapter extends ArrayAdapter<Video> {
 
@@ -196,7 +193,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
         public VideoAdapter(ArrayList<Video> movieVideos) {
             super(MovieActivity.this, R.layout.row_video, movieVideos);
             this.movieVideos = movieVideos;
-            Log.i("Log from VideoAdapter", ""+movieVideos.size());
         }
 
         @NonNull
@@ -206,7 +202,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
             View row = layoutInflater.inflate(R.layout.row_video, parent, false);
             TextView mVideoTitle = row.findViewById(R.id.tv_videoTitle);
             mVideoTitle.setText(movieVideos.get(position).getName());
-            Log.i("Position"+position, movieVideos.get(position).getName());
             return row;
         }
     }
@@ -219,7 +214,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
         public ReviewAdapter(ArrayList<Review> reviews) {
             super(MovieActivity.this, R.layout.row_review, reviews);
             this.mReviews = reviews;
-            Log.i("Log from ReviewAdapter", ""+reviews.size());
         }
 
         @NonNull
@@ -231,17 +225,14 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
             //content
             TextView mReviewContent = row.findViewById(R.id.tv_reviewContent);
             mReviewContent.setText(mReviews.get(position).getContent());
-            Log.i("Position"+position, mReviews.get(position).getContent());
 
             //author
             TextView mReviewAuthor = row.findViewById(R.id.tv_reviewAuthor);
             mReviewAuthor.setText(mReviews.get(position).getAuthor());
-            Log.i("Position"+position, mReviews.get(position).getAuthor());
 
             //reviewID
             TextView mReviewID = row.findViewById(R.id.tv_reviewID);
             mReviewID.setText("Review #" + (position+1));
-            Log.i("Postition"+position, "Review #" + (position+1));
             return row;
         }
     }
@@ -250,41 +241,46 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_details_activity);
-        mTitleDisplay = (TextView) findViewById(R.id.tv_original_title);
-        mYearDisplay = (TextView) findViewById(R.id.tv_year);
+        mTitleDisplay = findViewById(R.id.tv_original_title);
+        mYearDisplay = findViewById(R.id.tv_year);
         //mRatingDisplay = (RatingBar) findViewById(R.id.ratingBar);
-        mRatingTextDisplay = (TextView) findViewById(R.id.tv_rating);
-        mOverviewDisplay = (TextView) findViewById(R.id.tv_overview);
-        mPoster = (ImageView) findViewById(R.id.iv_poster_detail);
-        mBackdrop = (ImageView) findViewById(R.id.iv_backdrop);
+        mRatingTextDisplay = findViewById(R.id.tv_rating);
+        mOverviewDisplay = findViewById(R.id.tv_overview);
+        mPoster = findViewById(R.id.iv_poster_detail);
+        mBackdrop = findViewById(R.id.iv_backdrop);
         mDirectorDisplay = findViewById(R.id.tv_director);
         mLength = findViewById(R.id.tv_length);
         mDirector = findViewById(R.id.tv_director);
         mBudget = findViewById(R.id.tv_budget);
         Movie movie = null;
+
         favMovieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(FavMovieViewModel.class);
-        Log.i("favMovieViewModel", favMovieViewModel+"");
+
         buttonFavorite = findViewById(R.id.button_favorite);
+
+
+
         //fav button
         final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
         scaleAnimation.setDuration(500);
         BounceInterpolator bounceInterpolator = new BounceInterpolator();
         scaleAnimation.setInterpolator(bounceInterpolator);
-        buttonFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+
+        buttonFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                //animation
-                compoundButton.startAnimation(scaleAnimation);
-                if(isChecked) {
+            public void onClick(View view) {
+                buttonFavorite.startAnimation(scaleAnimation);
+                if(buttonFavorite.isChecked()) {
                     favMovieViewModel.insert(new FavouriteMovieForDB(extendedMovie.getId(), extendedMovie.getPosterPath()));
                     Log.i("DB", extendedMovie.getId() + " added");
                 } else {
                     favMovieViewModel.deleteMovieByID(extendedMovie.getId());
                     Log.i("DB", extendedMovie.getId() + " deleted");
                 }
-
             }
         });
+
 
         //show progressbar and wait for data from API
         showProgressBar();
@@ -293,6 +289,8 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity != null) {
             movie = intentThatStartedThisActivity.getParcelableExtra("movie");
+
+
 
             if (movie != null) {
                 //send a second request for all remaining data (reviews, cast, videos, extendedmovie)
@@ -303,19 +301,6 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
 
         return;
     }
-
-//    @Override
-//    public void onSaveInstanceState(Bundle savedInstanceState) {
-//        // Save the current movie
-//        savedInstanceState.putParcelable(PreferencesUtils.STATE_EXTENDED_MOVIES, extendedMovie);
-//        savedInstanceState.putParcelableArrayList(PreferencesUtils.STATE_REVIEWS, reviews);
-//        savedInstanceState.putParcelableArrayList(PreferencesUtils.STATE_CAST, cast);
-//        savedInstanceState.putParcelableArrayList(PreferencesUtils.STATE_VIDEOS, videos);
-//        savedInstanceState.putString(PreferencesUtils.STATE_DIRECTOR, directorsName);
-//
-//        // Always call the superclass so it can save the view hierarchy state
-//        super.onSaveInstanceState(savedInstanceState);
-//    }
 
     public void showProgressBar() {
         ConstraintLayout constraintLayout = findViewById(R.id.cl_movieDetails);
@@ -352,18 +337,12 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
     private void sendNetworkRequestForRemainingData(int movie_id) {
         Intent intentRemainingData = new Intent(MovieActivity.this, OtherDataService.class);
         intentRemainingData.putExtra("movie_id", movie_id);
-        Log.i("In snedNetworkforRemai1", "Executing");
         startService(intentRemainingData);
-
-        Log.i("In snedNetworkforRemai2", "Executing");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        Log.i("onStart", cast+"");
-
         IntentFilter intentFilter = new IntentFilter("OtherDataService");
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mReceiver, intentFilter);
     }
@@ -374,8 +353,4 @@ public class MovieActivity extends AppCompatActivity   implements OnClickCastLis
         LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReceiver);
     }
 
-    @Override
-    public void onClick(int index) {
-
-    }
 }

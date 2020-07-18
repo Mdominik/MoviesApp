@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     OnClickPosterListener onClickPosterListener;
     private FavMovieViewModel favMovieViewModel;
     private List<FavouriteMovieForDB> mFavouriteMovies;
-
+    private boolean bool_buttonToSend;
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 mFavouriteMovies = favouriteMoviesForDB;
             }
         });
-        Log.i("favMovieViewModel", favMovieViewModel+"");
 
+        Log.i("favMieedelFromMainAC" , favMovieViewModel+"");
 
         //retrieving data from API
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);

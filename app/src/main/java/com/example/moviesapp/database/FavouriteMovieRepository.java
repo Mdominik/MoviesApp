@@ -3,6 +3,7 @@ package com.example.moviesapp.database;
 import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,15 +14,18 @@ import com.example.moviesapp.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class FavouriteMovieRepository {
     private FavouriteMovieDAO dao;
     private LiveData<List<FavouriteMovieForDB>> allFavMovies;
-
+    private FavouriteMovieDatabase db;
     public FavouriteMovieRepository(Application application) {
-        FavouriteMovieDatabase db = FavouriteMovieDatabase.getInstance(application);
+        db = FavouriteMovieDatabase.getInstance(application);
         dao = db.favouriteMovieDao();
         allFavMovies = dao.getFavourites();
+        Log.i("FavMOvieRepo created","yes");
+        Log.i("FavMovieREpoallFavMoies", ""+(allFavMovies.getValue()==null) );
     }
 
     //API That repository exposes to outside
@@ -44,6 +48,19 @@ public class FavouriteMovieRepository {
         new DeleteFavMovieByIDAsyncTask(dao).execute(id);
     }
 
+     public Integer getByID(Integer i) {
+         try {
+             Log.i("Has item called", "yes");
+             return new CheckIfMovieExistsAsyncTask(dao).execute(i).get();
+         } catch (ExecutionException e) {
+             Log.i("No element in DB", "yes");
+             return 0;
+         } catch (InterruptedException e) {
+             e.printStackTrace();
+
+         }
+         return 0;
+     }
 
 
 
@@ -112,6 +129,23 @@ public class FavouriteMovieRepository {
         protected Void doInBackground(FavouriteMovieForDB... movies) {
             movieDAO.delete(movies[0]);
             return null;
+        }
+    }
+    private static class CheckIfMovieExistsAsyncTask extends AsyncTask<Integer, Void, Integer> {
+        private FavouriteMovieDAO movieDAO;
+
+        public CheckIfMovieExistsAsyncTask(FavouriteMovieDAO dao) {
+            movieDAO = dao;
+        }
+
+        @Override
+        protected Integer doInBackground(Integer... ids) {
+            return (movieDAO.getByID(ids[0]) == null) ? 0 : movieDAO.getByID(ids[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Integer intt) {
+            Log.i("CheckIfMovie finished", ""+intt);
         }
     }
 

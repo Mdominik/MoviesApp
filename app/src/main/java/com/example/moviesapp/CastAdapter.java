@@ -43,7 +43,6 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastAdapterVie
         mCasts.clear();
         mCasts.addAll(castList);
         this.notifyItemRangeInserted(0, mCasts.size() - 1);
-        Log.i("IN cast adpter castlist", ""+mCasts);
     }
     @NonNull
     @Override
@@ -79,12 +78,10 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastAdapterVie
                                 .into(image);
                     }
                 });
-        Log.i("OnBindVIewHolder Cast", holder.mCast+"");
     }
 
     @Override
     public int getItemCount(){
-        Log.i("Cast item count", ""+mCasts.size());
         return mCasts.size();
 
     }
@@ -97,7 +94,6 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastAdapterVie
             super(itemView);
             this.listener = listener;
             this.mCast =  itemView.findViewById(R.id.cv_cast);
-            Log.i("CastAdapter", "created");
         }
 
         @Override
