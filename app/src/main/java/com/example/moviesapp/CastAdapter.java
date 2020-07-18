@@ -73,6 +73,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.CastAdapterVie
 
                     @Override
                     public void onError(Exception e) {
+                        //brad pitt's picture by default
                         Picasso.get().load(
                                 "http://image.tmdb.org/t/p/w342/cckcYc2v0yh1tc9QjRelptcOBko.jpg")
                                 .into(image);

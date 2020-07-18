@@ -169,12 +169,15 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
             reviewAdapter = new ReviewAdapter(reviews);
             mListReviews.setAdapter(reviewAdapter);
 
+
+            //check if the movie exists in favourite database
             buttonFavorite.setChecked(favMovieViewModel.getByID(extendedMovie.getId()).intValue() == extendedMovie.getId().intValue());
 
             //copy pasted from internet to make listview scrolling inside scrollview work
             UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListReviews);
             Log.i("MovieAcity extedMovieID", extendedMovie.getId() + ", " + favMovieViewModel.getByID(extendedMovie.getId()));
-            //buttonFavorite.setChecked(favMovieViewModel.getByID(extendedMovie.getId()) == extendedMovie.getId());
+
+
             showMovieDetails();
         }
     };

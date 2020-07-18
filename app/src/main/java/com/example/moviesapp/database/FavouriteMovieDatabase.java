@@ -13,7 +13,7 @@ import android.content.Context;
 
 import com.example.moviesapp.utilities.TimestampConverter;
 
-@Database(entities = {FavouriteMovieForDB.class}, version = 1)
+@Database(entities = {FavouriteMovieForDB.class}, version = 2)
 @TypeConverters({TimestampConverter.class})
 public abstract class FavouriteMovieDatabase extends RoomDatabase {
     private static FavouriteMovieDatabase instance;

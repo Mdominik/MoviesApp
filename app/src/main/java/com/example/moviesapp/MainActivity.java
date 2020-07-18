@@ -38,6 +38,7 @@ import com.example.moviesapp.utilities.CSVReader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.example.moviesapp.MovieAdapter.MovieAdapterOnClickHandler;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         public void onReceive(Context context, Intent intent) {
             if(intent.getIntExtra("sorting", 1) == 4) {
                 mMovieAdapter.setMoviesData(mFavouriteMovies);
+                MainActivity.this.setTitle("Favourites");
                 showPosters();
                 return;
             }
@@ -73,11 +75,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 return;
             }
 
-
+            switch (intent.getIntExtra("sorting", 1)) {
+                case 1:
+                    MainActivity.this.setTitle("Popularity");
+                    break;
+                case 2:
+                    MainActivity.this.setTitle("Top rated");
+                    break;
+                case 3:
+                    MainActivity.this.setTitle("Upcoming");
+                    break;
+            }
             mMoviesList = intent.getParcelableArrayListExtra("movies");
-
             mMovieAdapter.setMoviesData(mMoviesList);
-
             showPosters();
         }
     };
@@ -175,6 +185,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         SharedPreferences.Editor editor;
         switch (item.getItemId()) {
             case R.id.sortByPopularity:
+
+                this.setTitle("Popularity");
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting", 1);
                 currentSorting = 1;
@@ -183,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByTopRated:
+
+                this.setTitle("Top rated");
+
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting", 2);
                 editor.apply();
@@ -191,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByUpcoming:
+                this.setTitle("Upcoming");
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting", 3);
                 editor.apply();
@@ -199,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByFavourites:
+                this.setTitle("Favourites");
                 mMovieAdapter.setMoviesData(mFavouriteMovies);
                 editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
                 editor.putInt("int_sorting", 4);
