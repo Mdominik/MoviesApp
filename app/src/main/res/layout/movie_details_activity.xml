@@ -292,6 +292,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/marginPaddingBig"
+            android:layout_marginLeft="@dimen/marginPaddingLittle"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -369,11 +370,13 @@
             android:textAlignment="center"
             android:textSize="@dimen/fontLarge"
             app:layout_constraintTop_toBottomOf="@+id/divider3" />
+
         <ListView
             android:id="@+id/lv_reviews"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/marginPaddingBig"
+            android:layout_marginLeft="@dimen/marginPaddingLittle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewReviews" />

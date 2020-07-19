@@ -177,8 +177,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
             buttonFavorite.setChecked(favMovieViewModel.getByID(
                     extendedMovie.getId()).intValue() == extendedMovie.getId());
 
-            //copy pasted from internet to make listview scrolling inside scrollview work
-            UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListReviews);
             Log.i("MovieAcity extedMovieID", extendedMovie.getId() + ", " + favMovieViewModel.getByID(extendedMovie.getId()));
 
 
@@ -289,7 +287,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
         scaleAnimation.setDuration(500);
         BounceInterpolator bounceInterpolator = new BounceInterpolator();
         scaleAnimation.setInterpolator(bounceInterpolator);
-
 
         // favourite button on click
         buttonFavorite.setOnClickListener(new View.OnClickListener() {

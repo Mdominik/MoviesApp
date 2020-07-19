@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getIntExtra("sorting", 1) == 4) {
-                mMovieAdapter.setMoviesData(mFavouriteMovies);
+                //mMovieAdapter.setMoviesData(mFavouriteMovies);
                 MainActivity.this.setTitle("Favourites");
                 showPosters();
                 return;
@@ -121,10 +121,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             cols = mMovieAdapter.getNumberColumnsHorizontal();
 
-            //Fixing no margin bug in horizontal view
-//            ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-//            lp.setMargins(10,0,10,10);
-//            mItemView.setLayoutParams(lp);
         }
 
         GridLayoutManager layoutManager
@@ -136,13 +132,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         //RECYCLER VIEW PART END
 
 
-        favMovieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(FavMovieViewModel.class);
-        favMovieViewModel.getAllFavMovies().observe(this, new Observer<List<FavouriteMovieForDB>>() {
-            @Override
-            public void onChanged(List<FavouriteMovieForDB> favouriteMoviesForDB) {
-                mFavouriteMovies = favouriteMoviesForDB;
-            }
-        });
+
 
         Log.i("favMieedelFromMainAC" , favMovieViewModel+"");
 
@@ -164,6 +154,21 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         super.onStart();
         IntentFilter intentFilter = new IntentFilter("MovieBackgroundService");
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        favMovieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(FavMovieViewModel.class);
+        favMovieViewModel.getAllFavMovies().observe(this, new Observer<List<FavouriteMovieForDB>>() {
+            @Override
+            public void onChanged(List<FavouriteMovieForDB> favouriteMoviesForDB) {
+                Log.i("Triggered", "TAK");
+                Log.i("Wielkosc listy", favouriteMoviesForDB.size()+"");
+                mFavouriteMovies = favouriteMoviesForDB;
+                mMovieAdapter.setMoviesData(mFavouriteMovies);
+            }
+        });
     }
 
     @Override
@@ -228,26 +233,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 startActivity(intent);
                 return true;
 
-
-
-    /*case R.id.nightMode:
-        editor = getSharedPreferences("sort", MODE_PRIVATE).edit();
-        editor.putInt("int_sorting",4);
-        editor.apply();
-        currentSorting = 4;
-        Log.i("Selecting sorting","night day mode selected");
-        return true;
-    */
             default:
                 return super.onOptionsItemSelected(item);
         }
 
     }
 
-
-    // COMPLETED (2) Override the onSharedPreferenceChanged method and update the show bass preference
-    // Updates the screen if the shared preferences change. This method is required when you make a
-    // class implement OnSharedPreferenceChangedListener
 
     @Override
     protected void onDestroy() {
