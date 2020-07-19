@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimestampConverter {
-
     @TypeConverter
     public static Long fromTimestamp(DateTime value) {
         if (value != null) {

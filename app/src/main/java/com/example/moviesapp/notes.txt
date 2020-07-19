@@ -1,4 +1,0 @@
-TODO:
-1) Change int sorting_criteria to enum
-2) apply margin for ImageView for horionztal orientation
-3)

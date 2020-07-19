@@ -147,7 +147,7 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
             //copy pasted from internet to make listview scrolling inside scrollview work
             UtilitySolveScrolling.setListViewHeightBasedOnChildren(mListVideos);
 
-
+            //redirect to youtube
             mListVideos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -167,6 +167,8 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
             mListReviews = findViewById(R.id.lv_reviews);
             LayoutInflater linf = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             linf = LayoutInflater.from(MovieActivity.this);
+
+            // inflate reviews layout
             for (int i = 0; i < reviews.size(); i++) {
                 Log.i("WIelkosc", "to " + reviews.size());
                 View v = linf.inflate(R.layout.row_review, null);//Pass your lineraLayout
@@ -190,10 +192,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
             //check if the movie exists in favourite database
             buttonFavorite.setChecked(favMovieViewModel.getByID(
                     extendedMovie.getId()).intValue() == extendedMovie.getId());
-
-            Log.i("MovieAcity extedMovieID", extendedMovie.getId() + ", " + favMovieViewModel.getByID(extendedMovie.getId()));
-
-
             showMovieDetails();
         }
     };
@@ -243,26 +241,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
         }
     }
 
-    class ReviewAdapter extends ArrayAdapter<Review> {
-
-        ArrayList<Review> mReviews;
-
-        public ReviewAdapter(ArrayList<Review> reviews) {
-            super(MovieActivity.this, R.layout.row_review, reviews);
-            this.mReviews = reviews;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            LayoutInflater layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View row = layoutInflater.inflate(R.layout.row_review, parent, false);
-
-
-            return row;
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -278,7 +256,7 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
         mDirector = findViewById(R.id.tv_director);
         mBudget = findViewById(R.id.tv_budget);
         buttonFavorite = findViewById(R.id.button_favorite);
-        Movie movie = null;
+        Movie movie ;
 
         favMovieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(FavMovieViewModel.class);
 
@@ -315,9 +293,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
         Intent intentThatStartedThisActivity = getIntent();
         if (intentThatStartedThisActivity != null) {
             movie = intentThatStartedThisActivity.getParcelableExtra("movie");
-
-
-
             if (movie != null) {
                 //send a second request for all remaining data (reviews, cast, videos, extendedmovie)
                 sendNetworkRequestForRemainingData(movie.getId());

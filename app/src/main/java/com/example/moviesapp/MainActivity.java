@@ -60,12 +60,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     OnClickPosterListener onClickPosterListener;
     private FavMovieViewModel favMovieViewModel;
     private List<FavouriteMovieForDB> mFavouriteMovies;
-    private boolean bool_buttonToSend;
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getIntExtra("sorting", 1) == 4) {
-                //mMovieAdapter.setMoviesData(mFavouriteMovies);
                 MainActivity.this.setTitle("Favourites");
                 showPosters();
                 return;
@@ -131,11 +129,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
         //RECYCLER VIEW PART END
 
-
-
-
-        Log.i("favMieedelFromMainAC" , favMovieViewModel+"");
-
         //retrieving data from API
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
 
@@ -163,10 +156,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         favMovieViewModel.getAllFavMovies().observe(this, new Observer<List<FavouriteMovieForDB>>() {
             @Override
             public void onChanged(List<FavouriteMovieForDB> favouriteMoviesForDB) {
-                Log.i("Triggered", "TAK");
-                Log.i("Wielkosc listy", favouriteMoviesForDB.size()+"");
                 mFavouriteMovies = favouriteMoviesForDB;
-                mMovieAdapter.setMoviesData(mFavouriteMovies);
+                sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
+                //current sorting criteria
+                if (sharedPreferences.getInt("int_sorting", 1) == 4) {
+                    mMovieAdapter.setMoviesData(mFavouriteMovies);
+                }
             }
         });
     }
@@ -196,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 editor.putInt("int_sorting", 1);
                 currentSorting = 1;
                 editor.apply();
-                Log.i("Selecting sorting", "Sorted by popular selected");
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByTopRated:
@@ -207,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 editor.putInt("int_sorting", 2);
                 editor.apply();
                 currentSorting = 2;
-                Log.i("Selecting sorting", "Sorted by rated selected");
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByUpcoming:
@@ -216,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 editor.putInt("int_sorting", 3);
                 editor.apply();
                 currentSorting = 3;
-                Log.i("Selecting sorting", "Sorted by upcoming selected");
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByFavourites:
