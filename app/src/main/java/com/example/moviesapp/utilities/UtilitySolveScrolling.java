@@ -2,6 +2,7 @@ package com.example.moviesapp.utilities;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -13,9 +14,14 @@ public class UtilitySolveScrolling {
             return;
         }
 
-        int totalHeight = 0;
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+
         for (int i = 0; i < listAdapter.getCount(); i++) {
             View listItem = listAdapter.getView(i, null, listView);
+            if (listItem instanceof ViewGroup) {
+                listItem.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            }
+
             listItem.measure(0, 0);
             totalHeight += listItem.getMeasuredHeight();
         }
@@ -24,4 +30,6 @@ public class UtilitySolveScrolling {
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
     }
+
+
 }

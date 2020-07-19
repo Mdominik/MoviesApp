@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -71,25 +72,20 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
     private TextView mLength;
     private TextView mDirector;
     private TextView mBudget;
-    boolean rememberSwitch;
     private CastAdapter mCastAdapter;
     private ExtendedMovie extendedMovie;
     private ArrayList<Review> reviews;
     private ArrayList<Cast> cast;
     private ArrayList<Video> videos;
     private String directorsName;
-    private ConstraintLayout mMovieDetail;
     private ToggleButton buttonFavorite;
     private RecyclerView mCastRecyclerView;
     private CardView mCast;
-    private List<Cast> mCastList;
     private ListView mListVideos;
 
-    private ListView mListReviews;
+    private LinearLayout mListReviews;
     private FavMovieViewModel favMovieViewModel;
-    OnClickCastListener onClickCastListener;
     private VideoAdapter videoAdapter;
-    private ReviewAdapter reviewAdapter;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -169,9 +165,27 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
 
             //show reviews
             mListReviews = findViewById(R.id.lv_reviews);
-            reviewAdapter = new ReviewAdapter(reviews);
-            mListReviews.setAdapter(reviewAdapter);
+            LayoutInflater linf = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            linf = LayoutInflater.from(MovieActivity.this);
+            for (int i = 0; i < reviews.size(); i++) {
+                Log.i("WIelkosc", "to " + reviews.size());
+                View v = linf.inflate(R.layout.row_review, null);//Pass your lineraLayout
 
+                //content
+                TextView mReviewContent = v.findViewById(R.id.tv_reviewContent);
+                Log.i("view", mReviewContent+"");
+                mReviewContent.setText(reviews.get(i).getContent());
+
+                //author
+                TextView mReviewAuthor = v.findViewById(R.id.tv_reviewAuthor);
+                mReviewAuthor.setText(reviews.get(i).getAuthor());
+
+                //reviewID
+                TextView mReviewID = v.findViewById(R.id.tv_reviewID);
+                mReviewID.setText("Review #" + (i+1));
+
+                mListReviews.addView(v);
+            }
 
             //check if the movie exists in favourite database
             buttonFavorite.setChecked(favMovieViewModel.getByID(
@@ -244,17 +258,7 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
             LayoutInflater layoutInflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View row = layoutInflater.inflate(R.layout.row_review, parent, false);
 
-            //content
-            TextView mReviewContent = row.findViewById(R.id.tv_reviewContent);
-            mReviewContent.setText(mReviews.get(position).getContent());
 
-            //author
-            TextView mReviewAuthor = row.findViewById(R.id.tv_reviewAuthor);
-            mReviewAuthor.setText(mReviews.get(position).getAuthor());
-
-            //reviewID
-            TextView mReviewID = row.findViewById(R.id.tv_reviewID);
-            mReviewID.setText("Review #" + (position+1));
             return row;
         }
     }
