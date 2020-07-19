@@ -1,4 +1,4 @@
-# MoviesApp
+# MoviesApp 2
 ## The app allows you to find out about the recent, most popular and top rated movies. 
 ![Alt Text](project2.gif)
 
