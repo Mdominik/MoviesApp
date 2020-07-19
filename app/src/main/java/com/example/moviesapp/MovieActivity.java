@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -212,7 +213,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
 
     class VideoAdapter extends ArrayAdapter<Video> {
 
-        Context context;
         ArrayList<Video> movieVideos;
 
         public VideoAdapter(ArrayList<Video> movieVideos) {
@@ -233,7 +233,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
 
     class ReviewAdapter extends ArrayAdapter<Review> {
 
-        Context context;
         ArrayList<Review> mReviews;
 
         public ReviewAdapter(ArrayList<Review> reviews) {
@@ -268,7 +267,6 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
         setContentView(R.layout.movie_details_activity);
         mTitleDisplay = findViewById(R.id.tv_original_title);
         mYearDisplay = findViewById(R.id.tv_year);
-        //mRatingDisplay = (RatingBar) findViewById(R.id.ratingBar);
         mRatingTextDisplay = findViewById(R.id.tv_rating);
         mOverviewDisplay = findViewById(R.id.tv_overview);
         mPoster = findViewById(R.id.iv_poster_detail);
@@ -277,31 +275,33 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
         mLength = findViewById(R.id.tv_length);
         mDirector = findViewById(R.id.tv_director);
         mBudget = findViewById(R.id.tv_budget);
+        buttonFavorite = findViewById(R.id.button_favorite);
         Movie movie = null;
 
         favMovieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(FavMovieViewModel.class);
 
-        buttonFavorite = findViewById(R.id.button_favorite);
 
 
 
-        //fav button
+
+        //fav button animation
         final ScaleAnimation scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
         scaleAnimation.setDuration(500);
         BounceInterpolator bounceInterpolator = new BounceInterpolator();
         scaleAnimation.setInterpolator(bounceInterpolator);
 
 
+        // favourite button on click
         buttonFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 buttonFavorite.startAnimation(scaleAnimation);
                 if(buttonFavorite.isChecked()) {
                     favMovieViewModel.insert(new FavouriteMovieForDB(extendedMovie.getId(), extendedMovie.getPosterPath()));
-                    Log.i("DB", extendedMovie.getId() + " added");
+                    Toast.makeText(MovieActivity.this, extendedMovie.getTitle() + " was added to favourites", Toast.LENGTH_SHORT).show();
                 } else {
                     favMovieViewModel.deleteMovieByID(extendedMovie.getId());
-                    Log.i("DB", extendedMovie.getId() + " deleted");
+                    Toast.makeText(MovieActivity.this, extendedMovie.getTitle() + " was deleted from favourites", Toast.LENGTH_SHORT).show();
                 }
             }
         });

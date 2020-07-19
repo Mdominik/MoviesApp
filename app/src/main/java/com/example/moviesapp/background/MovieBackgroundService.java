@@ -25,7 +25,6 @@ import com.example.moviesapp.api.model.Review;
 import com.example.moviesapp.api.model.Video;
 import com.example.moviesapp.api.service.MovieClient;
 import com.example.moviesapp.utilities.CSVReader;
-import com.example.moviesapp.utilities.Config;
 import com.example.moviesapp.utilities.NetworkUtils;
 import com.example.moviesapp.utilities.PreferencesUtils;
 

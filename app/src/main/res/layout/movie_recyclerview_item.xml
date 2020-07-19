@@ -4,6 +4,6 @@
     android:id="@+id/movieItem"
     android:layout_width="match_parent"
     android:layout_height="300dp"
-    android:layout_marginRight="10dp"
+    android:layout_marginRight="@dimen/marginPaddingLittle"
     android:contentDescription="@string/alternativeTextPoster"
-    android:layout_marginLeft="10dp"/>
+    android:layout_marginLeft="@dimen/marginPaddingLittle"/>

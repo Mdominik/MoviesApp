@@ -18,4 +18,8 @@
     <string name="budget">budget</string>
 
     <string name="minutes">min</string>
+    <string name="videos_header">videos</string>
+    <string name="reviews_header">reviews</string>
+    <string name="cast_header">cast</string>
+
 </resources>

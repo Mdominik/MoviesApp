@@ -4,8 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/cv_cast"
-    android:layout_margin="10dp"
-    android:elevation="10sp"
+    android:layout_margin="@dimen/marginPaddingLittle"
+    android:elevation="@dimen/fontMedium"
 
      >
 
@@ -14,32 +14,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp"
+        android:padding="@dimen/marginPaddingLittle"
         android:background="@drawable/background">
 
         <ImageView
             android:id="@+id/iv_actorImage"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:padding="10dp" />
+            android:layout_margin="@dimen/marginPaddingLittle" />
 
         <TextView
             android:id="@+id/tv_actorName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_light"
 
-            android:padding="10dp"
+            android:padding="@dimen/marginPaddingLittle"
             android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/tv_characterName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_light"
-
-            android:padding="10dp"
+            android:padding="@dimen/marginPaddingLittle"
             android:textColor="@color/white" />
 
     </LinearLayout>
