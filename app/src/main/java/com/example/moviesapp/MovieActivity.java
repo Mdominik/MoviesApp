@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -302,6 +303,13 @@ public class MovieActivity extends AppCompatActivity   implements CastAdapter.Ca
 
         return;
     }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+
 
     public void showProgressBar() {
         ConstraintLayout constraintLayout = findViewById(R.id.cl_movieDetails);

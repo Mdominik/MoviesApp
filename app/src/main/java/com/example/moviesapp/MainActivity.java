@@ -1,6 +1,7 @@
 package com.example.moviesapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -17,11 +18,14 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -60,6 +64,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     OnClickPosterListener onClickPosterListener;
     private FavMovieViewModel favMovieViewModel;
     private List<FavouriteMovieForDB> mFavouriteMovies;
+    private GridLayoutManager layoutManager;
+    private Parcelable mLayoutManagerState;
+    private static final String LAYOUT_MANAGER_STATE = "LAYOUT_MANAGER_STATE";
+    private static int lastFirstVisiblePosition = 0;
+    private static Bundle mBundleRecyclerViewState;
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -73,19 +82,33 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 return;
             }
 
+
+            mMoviesList = intent.getParcelableArrayListExtra("movies");
+            mMovieAdapter.setMoviesData(mMoviesList);
+
+
             switch (intent.getIntExtra("sorting", 1)) {
                 case 1:
                     MainActivity.this.setTitle("Popularity");
+
+                    Log.i("From broadcastre1", "sorting1");
                     break;
                 case 2:
                     MainActivity.this.setTitle("Top rated");
+                    Log.i("From broadcastre2", "sorting2");
                     break;
                 case 3:
                     MainActivity.this.setTitle("Upcoming");
+                    Log.i("From broadcastre3", "sorting3");
                     break;
             }
-            mMoviesList = intent.getParcelableArrayListExtra("movies");
-            mMovieAdapter.setMoviesData(mMoviesList);
+
+            //remember only once (after rotation), then change to null
+            if(mLayoutManagerState != null) {
+                layoutManager.onRestoreInstanceState(mLayoutManagerState);
+                mLayoutManagerState = null;
+            }
+
             showPosters();
         }
     };
@@ -121,20 +144,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
 
         }
 
-        GridLayoutManager layoutManager
-                = new GridLayoutManager(this, cols);
+        Log.i("Saved from onCreate" , savedInstanceState+"");
+        layoutManager = new GridLayoutManager(this, cols);
 
         mMoviesRecyclerView.setLayoutManager(layoutManager);
         mMoviesRecyclerView.setHasFixedSize(true);
         mMoviesRecyclerView.setAdapter(mMovieAdapter);
+
+        Log.i("OnCreate called1", layoutManager+"");
+
+
         //RECYCLER VIEW PART END
 
+        Log.i("RecyclervIew", "true");
         //retrieving data from API
         sharedPreferences = getSharedPreferences("sort", MODE_PRIVATE);
 
         //current sorting criteria
         int sort = sharedPreferences.getInt("int_sorting", 1);
-
+        if (savedInstanceState != null) {
+            mLayoutManagerState = savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE);
+        }
         //first request
         sendNetworkRequest(sort);
 
@@ -191,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 editor.putInt("int_sorting", 1);
                 currentSorting = 1;
                 editor.apply();
+                mMoviesRecyclerView.getLayoutManager().scrollToPosition(0);
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByTopRated:
@@ -201,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 editor.putInt("int_sorting", 2);
                 editor.apply();
                 currentSorting = 2;
+                mMoviesRecyclerView.getLayoutManager().scrollToPosition(0);
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByUpcoming:
@@ -209,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 editor.putInt("int_sorting", 3);
                 editor.apply();
                 currentSorting = 3;
+                mMoviesRecyclerView.getLayoutManager().scrollToPosition(0);
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.sortByFavourites:
@@ -218,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
                 editor.putInt("int_sorting", 4);
                 currentSorting = 4;
                 editor.apply();
+                mMoviesRecyclerView.getLayoutManager().scrollToPosition(0);
                 sendNetworkRequest(currentSorting);
                 return true;
             case R.id.menu_pref:
@@ -238,6 +272,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(LAYOUT_MANAGER_STATE, layoutManager.onSaveInstanceState());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        if (savedInstanceState instanceof Bundle) {
+            layoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE));
+        }
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     public void onClick(int index) {
 
         //create new Intent (detailactivity)
@@ -251,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapterOnCli
         if(mMovieAdapter.getmMoviesList().get(index) instanceof Movie) {
             movie = (Movie) mMovieAdapter.getmMoviesList().get(index);
         }
+
         else if(mMovieAdapter.getmMoviesList().get(index) instanceof FavouriteMovieForDB) {
             fav_movie = (FavouriteMovieForDB) mMovieAdapter.getmMoviesList().get(index);
             movie = new Movie(fav_movie.getPosterPath(), fav_movie.getIdFromAPi());
